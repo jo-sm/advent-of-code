@@ -41,17 +41,13 @@ What is the sum of the fuel requirements for all of the modules on your spacecra
   (iter '())
 )
 
+(define (calc-fuel-req-for-mass mass) (- (floor (/ mass 3)) 2))
+
 (define (sum-fuel-reqs)
   ; Add each fuel requirement together until there is nothing left in the list
   ; Fuel req. calc: f(mass) = [[mass / 3]] - 2
-  (define (iter result i)
-    (if (null? i)
-      result
-      (iter (+ result (- (floor (/ (car i) 3)) 2)) (cdr i))
-    )
-  )
 
-  (iter 0 (read-fuel-input))
+  (foldr (lambda (i memo) (+ memo (calc-fuel-req-for-mass i))) 0 (read-fuel-input))
 )
 
 (sum-fuel-reqs)

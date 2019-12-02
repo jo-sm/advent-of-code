@@ -30,27 +30,20 @@ What is the sum of the fuel requirements for all of the modules on your spacecra
   (iter '())
 )
 
-(define (get-fuel-req-for-module result i)
+(define (calc-fuel-req-for-module total mass)
   ; If the calculation is less than 0, do not add it to the result, and return
   ; the result. Otherwise, add it and continue the iteration.
   ; Fuel req calc: [[i/3]] - 2
-  (let ([cur (- (floor (/ i 3)) 2)])
-    (if (<= cur 0)
-      result
-      (get-fuel-req-for-module (+ result cur) cur)
+  (let ([next (- (floor (/ mass 3)) 2)])
+    (if (<= next 0)
+      total
+      (calc-fuel-req-for-module (+ total next) next)
     )
   )
 )
 
 (define (sum-fuel-reqs)
-  (define (iter result i)
-    (if (null? i)
-      result
-      (iter (get-fuel-req-for-module result (car i)) (cdr i))
-    )
-  )
-
-  (iter 0 (read-fuel-input))
+  (foldr (lambda (i memo) (+ memo (calc-fuel-req-for-module 0 i))) 0 (read-fuel-input))
 )
 
 (sum-fuel-reqs)
