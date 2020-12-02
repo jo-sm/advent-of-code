@@ -22,7 +22,7 @@
 (define (run-program a b)
   (define program (list-set (list-set program-raw 1 a) 2 b))
 
-  (first (second (run-intcode-program program)))
+  (first (second (start program)))
 )
 
 ; Run a given program

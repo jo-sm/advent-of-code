@@ -6,4 +6,4 @@
 
 (define program (flatten (read "Intcode.program" (lambda (line) (map (lambda (i) (string->number i)) (string-split line ","))))))
 
-(last (fourth (run-intcode-program program #:input 1)))
+(last (first ((start program) 1)))

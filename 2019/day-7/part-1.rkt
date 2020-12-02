@@ -9,8 +9,9 @@
   (define (determine-signal-for-combo prev-output combo)
     (if (null? combo)
       prev-output
-      (let ([run-one (run-intcode-program program #:input (car combo))])
-        (determine-signal-for-combo (first (fourth (run-intcode-program (second run-one) #:input prev-output #:output (fourth run-one) #:pos (fifth run-one)))) (cdr combo))
+      (let ([computer-input (start program)])
+        (computer-input (car combo))
+        (determine-signal-for-combo (first (first (computer-input prev-output))) (cdr combo))
       )
     )
   )

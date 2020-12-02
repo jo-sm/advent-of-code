@@ -1,5 +1,6 @@
 #lang racket
 
+(require racket/generator)
 (require "./constants.rkt")
 (require "./opcodes.rkt")
 
@@ -55,6 +56,33 @@
   (apply (opcode-proc opcode) program input output pos rb args)
 )
 
+(define (start program)
+  (define r (generator ()
+    ; initial conditions
+    (let loop ([result (list CONTINUE program (void) null 0 0)])
+      (cond
+        ((equal? (first result) HALT) (list (fourth result) (second result)))
+        ((equal? (first result) CONTINUE) (loop (apply run-instruction (cdr result))))
+        (else
+          (let ([input (yield (list (fourth result)))])
+            (loop (run-instruction (second result) input (fourth result) (fifth result) (sixth result)))
+          )
+        )
+      )
+    )
+  ))
+
+  (r)
+
+  r
+)
+(provide start)
+
+(define (finished? intcode-program)
+  (equal? (generator-state intcode-program) 'done)
+)
+(provide finished?)
+
 (define (run-intcode-program program #:input [input (void)] #:output [output null] #:pos [pos 0] #:rb [rb 0])
   (define (iter result)
     (cond
@@ -65,5 +93,4 @@
 
   (iter (list CONTINUE program input output pos rb))
 )
-
 (provide run-intcode-program)

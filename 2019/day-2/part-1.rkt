@@ -6,4 +6,4 @@
 (define program-raw (flatten (read "Intcode.program" (lambda (line) (map (lambda (i) (string->number i)) (string-split line ","))))))
 (define program (list-set (list-set program-raw 1 12) 2 2))
 
-(first (second (run-intcode-program program)))
+(first (second (start program)))
