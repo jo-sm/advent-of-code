@@ -5,22 +5,30 @@
 
 (require "../utils.rkt")
 
-(define passports
-  (map (lambda (x) (map (lambda (y) (string-split y ":")) x)) (map string-split (string-split (read-file "input") "\n\n")))
-)
-
-(define (valid-passport passport)
+(define (is-valid-passport passport)
   (define required-keys (list "byr" "iyr" "eyr" "hgt" "hcl" "ecl" "pid"))
 
-  (define (iter remaining-keys remaining-passport)
+  (define (iter rem-keys rem-passport)
     (cond
-      ((and (= (length remaining-passport) 0) (> (length remaining-keys) 0)) false)
-      ((and (= (length remaining-passport) 0) (= (length remaining-keys) 0)) true)
-      (else (iter (remove (first (car remaining-passport)) remaining-keys) (cdr remaining-passport)))
+      ((and (= (length rem-passport) 0) (> (length rem-keys) 0)) false)
+      ((and (= (length rem-passport) 0) (= (length rem-keys) 0)) true)
+      (else (iter (remove (first (car rem-passport)) rem-keys) (cdr rem-passport)))
     )
   )
 
   (iter required-keys passport)
 )
 
-(length (filter valid-passport passports))
+(define passports
+  (map
+    (lambda (x) (map
+      (lambda (y) (string-split y ":"))
+      x)
+    )
+    (map
+      string-split
+      (string-split (read-file "input") "\n\n"))
+    )
+)
+
+(length (filter is-valid-passport passports))

@@ -14,51 +14,55 @@
 
 (require "../utils.rkt")
 
-(define passports
-  (map (lambda (x) (map (lambda (y) (string-split y ":")) x)) (map string-split (string-split (read-file "input") "\n\n")))
+(struct height (length unit))
+
+(define (item-to-kv item)
+  (define-values (key raw-value) (list->values (string-split item ":")))
+  (define value (case key
+    (("byr" "iyr" "eyr") (let ([n (string->number raw-value)])
+      (if n n 0)
+    ))
+    (("hgt") (let ([parsed (regexp-match #px"^([0-9]{2,3})(cm|in)$" raw-value)])
+      (if parsed
+        (height (string->number (second parsed)) (third parsed))
+        (height 0 "cm")
+      )
+    ))
+    (else raw-value)
+  ))
+
+  (list key value)
 )
 
-(define (validate-height value)
-  (define num-cm (string->number (first (string-split value "cm"))))
-  (define num-in (string->number (first (string-split value "in"))))
-
-  (cond
-    (num-cm (and (string-suffix? value "cm") (>= num-cm 150) (<= num-cm 193)))
-    (num-in (and (string-suffix? value "in") (>= num-in 59) (<= num-in 76)))
-    (else false)
-  )
-)
-
-(define (validate-year value min max)
-  (define value-year (string->number value))
-
-  (if value-year
-    (and (>= value-year min) (<= value-year max))
-    false
-  )
-)
-
-(define (validate-key key value)
+(define (validate-kv key value)
   (case key
-    (("byr") (validate-year value 1920 2002))
-    (("iyr") (validate-year value 2010 2020))
-    (("eyr") (validate-year value 2020 2030))
-    (("hgt") (validate-height value))
+    (("byr") (and (>= value 1920) (<= value 2002)))
+    (("iyr") (and (>= value 2010) (<= value 2020)))
+    (("eyr") (and (>= value 2020) (<= value 2030)))
+    (("hgt") (if (equal? (height-unit value) "cm")
+      (and (>= (height-length value) 150) (<= (height-length value) 193))
+      (and (>= (height-length value) 59) (<= (height-length value) 76))
+    ))
     (("hcl") (regexp-match? #px"^#[0-9a-f]{6}$" value))
-    (("ecl") (index-of (list "amb" "blu" "brn" "gry" "grn" "hzl" "oth") value))
+    (("ecl") (number? (index-of (list "amb" "blu" "brn" "gry" "grn" "hzl" "oth") value)))
     (("pid") (regexp-match? #px"^[0-9]{9}$" value))
     (("cid") true)
     (else false)
   )
 )
 
-(define (valid-passport passport)
+(define (is-valid-passport passport)
   (define required-keys (list "byr" "iyr" "eyr" "hgt" "hcl" "ecl" "pid"))
 
-  (define (iter remaining-keys remaining-passport)
+  (define (iter rem-keys rem-passport)
     (cond
-      ((= (length remaining-passport) 0) (= (length remaining-keys) 0))
-      ((apply validate-key (car remaining-passport)) (iter (remove (first (car remaining-passport)) remaining-keys) (cdr remaining-passport)))
+      ; There should be no keys remaining
+      ((= (length rem-passport) 0) (= (length rem-keys) 0))
+
+      ; If the kv is valid, remove that key and continue with rest of passport
+      ((apply validate-kv (car rem-passport)) (iter (remove (first (car rem-passport)) rem-keys) (cdr rem-passport)))
+
+      ; kv is not valid
       (else false)
     )
   )
@@ -66,4 +70,14 @@
   (iter required-keys passport)
 )
 
-(length (filter valid-passport passports))
+(define passports
+  (map
+    (lambda (item) (map item-to-kv item))
+    (map
+      string-split
+      (read-file "input" (lambda (f) (string-split f "\n\n")))
+    )
+  )
+)
+
+(length (filter is-valid-passport passports))

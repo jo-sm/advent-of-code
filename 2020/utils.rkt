@@ -1,15 +1,22 @@
 #lang racket
 
-(define (read filename [mapf (lambda (x) x)])
-  (define lines (port->lines (open-input-file filename #:mode 'text)))
+(define (read-file [filename "input"] [processor identity])
+  (processor (port->string (open-input-file filename #:mode 'text)))
+)
 
-  (map mapf lines)
+(provide read-file)
+
+(define (read [filename "input"] [mapf identity])
+  (map
+    mapf
+    (read-file filename (lambda (f) (string-split f "\n")))
+  )
 )
 
 (provide read)
 
-(define (read-file filename)
-  (port->string (open-input-file filename #:mode 'text))
+(define (list->values lst)
+  (apply values lst)
 )
 
-(provide read-file)
+(provide list->values)
