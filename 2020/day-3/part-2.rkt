@@ -5,7 +5,7 @@
 (define lines (read-input-lines))
 
 (define (get-num-trees x-length y-length)
-  (define line-length (string-length (list-ref lines 0))) ; all lines are the same size
+  (define line-length (string-length (car lines))) ; all lines are the same size
 
   (define (iter num-trees x y)
     (cond

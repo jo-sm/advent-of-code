@@ -2,21 +2,19 @@
 
 (require "../utils.rkt")
 
-(define (parse-line line)
-  (let* (
-    [split (string-split line)]
-    [numbers (map string->number (string-split (list-ref split 0) "-"))]
-    [i (list-ref numbers 0)]
-    [j (list-ref numbers 1)]
-    [char (list-ref (string-split (list-ref split 1) ":") 0)]
-    [password-chars (string-split (list-ref split 2) "")]
+(struct pos (i j))
+
+(define (is-valid-password line)
+  (let*-values (
+    [(raw-pos raw-char password) (list->values (string-split line))]
+    [(positions) (apply pos (map string->number (string-split raw-pos "-")))]
+    [(char) (string-ref raw-char 0)]
   )
-    (xor (equal? (list-ref password-chars i) char) (equal? (list-ref password-chars j) char))
+    (xor
+      (equal? (string-ref password (- (pos-i positions) 1)) char)
+      (equal? (string-ref password (- (pos-j positions) 1)) char)
+    )
   )
 )
 
-(define (main)
-  (length (filter (lambda (x) x) (read-input-lines #:line-parser parse-line)))
-)
-
-(main)
+(length (filter is-valid-password (read-input-lines)))

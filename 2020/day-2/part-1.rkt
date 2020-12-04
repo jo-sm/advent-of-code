@@ -2,21 +2,17 @@
 
 (require "../utils.rkt")
 
-(define (parse-line line)
-  (let* (
-    [split (string-split line)]
-    [numbers (map string->number (string-split (list-ref split 0) "-"))]
-    [min (list-ref numbers 0)]
-    [max (list-ref numbers 1)]
-    [char (list-ref (string-split (list-ref split 1) ":") 0)]
-    [num (length (filter (lambda (x) (equal? x char)) (string-split (list-ref split 2) "")))]
+(struct range (min max))
+
+(define (is-valid-password line)
+  (let*-values (
+    [(raw-range raw-char password) (list->values (string-split line))]
+    [(pass-range) (apply range (map string->number (string-split raw-range "-")))]
+    [(char) (string-ref raw-char 0)]
+    [(num) (count (lambda (x) (equal? x char)) (string->list password))]
   )
-    (and (>= num min) (<= num max))
+    (and (>= num (range-min pass-range)) (<= num (range-max pass-range)))
   )
 )
 
-(define (main)
-  (length (filter (lambda (x) x) (read-input-lines #:line-parser parse-line)))
-)
-
-(main)
+(length (filter is-valid-password (read-input-lines)))
