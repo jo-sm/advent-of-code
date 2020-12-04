@@ -75,7 +75,7 @@
     (lambda (item) (map item-to-kv item))
     (map
       string-split
-      (read-file "input" (lambda (f) (string-split f "\n\n")))
+      (read-input-file #:file-parser (lambda (f) (string-split f "\n\n")))
     )
   )
 )

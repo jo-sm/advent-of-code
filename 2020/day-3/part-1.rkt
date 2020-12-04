@@ -16,4 +16,4 @@
   (iter 0 3 1)
 )
 
-(get-num-trees (read "input" identity))
+(get-num-trees (read-input-lines))

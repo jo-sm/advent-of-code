@@ -16,7 +16,7 @@
 )
 
 (define (main)
-  (length (filter (lambda (x) x) (read "input" parse-line)))
+  (length (filter (lambda (x) x) (read-input-lines #:line-parser parse-line)))
 )
 
 (main)

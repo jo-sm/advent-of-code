@@ -27,8 +27,9 @@
     )
     (map
       string-split
-      (string-split (read-file "input") "\n\n"))
+      (read-input-file #:file-parser (lambda (f) (string-split f "\n\n")))
     )
+  )
 )
 
 (length (filter is-valid-passport passports))

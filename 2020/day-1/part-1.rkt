@@ -28,4 +28,4 @@
   )
 )
 
-(main (read "input" string->number))
+(main (read-input-lines #:line-parser string->number))
