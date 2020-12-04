@@ -7,3 +7,9 @@
 )
 
 (provide read)
+
+(define (read-file filename)
+  (port->string (open-input-file filename #:mode 'text))
+)
+
+(provide read-file)
