@@ -82,15 +82,3 @@
   (equal? (generator-state intcode-program) 'done)
 )
 (provide finished?)
-
-(define (run-intcode-program program #:input [input (void)] #:output [output null] #:pos [pos 0] #:rb [rb 0])
-  (define (iter result)
-    (cond
-      ((equal? (first result) CONTINUE) (iter (apply run-instruction (cdr result))))
-      (else result)
-    )
-  )
-
-  (iter (list CONTINUE program input output pos rb))
-)
-(provide run-intcode-program)

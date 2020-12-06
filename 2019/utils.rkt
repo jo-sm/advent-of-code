@@ -3,7 +3,7 @@
 (require racket/draw)
 (require racket/gui/base)
 
-(define (read filename [mapf (lambda (x) x)])
+(define (read [filename "input"] [mapf identity])
   (define lines (port->lines (open-input-file filename #:mode 'text)))
 
   (map mapf lines)

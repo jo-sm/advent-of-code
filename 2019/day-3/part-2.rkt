@@ -1,97 +1,87 @@
 #lang racket
 
 (require "../utils.rkt")
+(require srfi/26)
 
-; Helpers for coords/vectors
-(define (cur-coord coords) (car coords))
-(define (cur-vec vectors) (car vectors))
-(define (cur-vec-direction vectors) (car (car vectors)))
-(define (cur-vec-length vectors) (cdr (car vectors)))
-(define (subtract-one-from-vec v) (cons (car v) (- (cdr v) 1)))
+(struct euclidean-vector (direction magnitude) #:transparent)
+(define (construct-euclidean-vector vector-string)
+  (euclidean-vector
+    (substring vector-string 0 1)
+    (string->number (substring vector-string 1)))
+)
 
-(define (line-to-vectors line)
+(struct point (x y) #:transparent)
+
+(define (generate-points last-point vector)
+  ; Create a range of next x or y coordinates for the generated points
+  (define next-coordinates (case (euclidean-vector-direction vector)
+    [("U")
+      (range
+        (+ (point-y last-point) 1)
+        (+ (point-y last-point) (euclidean-vector-magnitude vector) 1))]
+    [("D")
+      (range
+        (- (point-y last-point) 1)
+        (- (point-y last-point) (euclidean-vector-magnitude vector) 1)
+        -1)]
+    [("R")
+      (range
+        (+ (point-x last-point) 1)
+        (+ (point-x last-point) (euclidean-vector-magnitude vector) 1))]
+    [("L")
+      (range
+        (- (point-x last-point) 1)
+        (- (point-x last-point) (euclidean-vector-magnitude vector) 1)
+        -1)]
+  ))
+
+  (case (euclidean-vector-direction vector)
+    [("U" "D")
+      (map
+        (lambda (coordinate) (point (point-x last-point) coordinate))
+        next-coordinates)]
+    [("R" "L")
+      (map
+        (lambda (coordinate) (point coordinate (point-y last-point)))
+        next-coordinates)]
+  )
+)
+
+(define (find-intersections path-a path-b)
+  (define intersections (set-intersect (list->set path-a) (list->set path-b)))
+
+  ; 0,0 isn't really an intersection since both lines start from there
+  ; due to the way the list of points are constructed
+  (set->list (set-remove intersections (point 0 0)))
+)
+
+(define vectors-lists
   (map
-    (lambda (i) (cons (substring i 0 1) (string->number (substring i 1))))
-    (string-split line ",")
-  )
+    (cut map construct-euclidean-vector <>)
+    (read "input" (cut string-split <> ","))))
+
+(define paths
+  (map
+    (cut foldl
+      (lambda (current-vector points)
+        (append points (generate-points (last points) current-vector)))
+      (list (point 0 0))
+      <>)
+    vectors-lists))
+
+(define intersections (apply find-intersections paths))
+
+(define (distance-from-start path point)
+  (index-of path point)
 )
-
-(define (calc-manhattan-dist coord)
-  ; Since we are always measuring the distance from 0,0 we can simply add the absolute values together
-  ; The general case: |p1-q1|+|p2-q2|
-  (+ (abs (car coord)) (abs (cdr coord)))
-)
-
-(define (get-lowest-value lst)
-  (foldr (lambda (i memo) (if (< i memo) i memo)) (car lst) lst)
-)
-
-(define (calc-next-coord vector cur-coord)
-  (define direction (car vector))
-  (define i (car cur-coord))
-  (define j (cdr cur-coord))
-
-  (cond
-    ((equal? direction "R") (cons i (+ j 1)))
-    ((equal? direction "L") (cons i (- j 1)))
-    ((equal? direction "D") (cons (- i 1) j))
-    ((equal? direction "U") (cons (+ i 1) j))
-  )
-)
-
-(define (calc-coords-from-vecs vecs)
-  (define (iter coords remaining-vecs)
-    (cond
-      ((null? remaining-vecs) coords)
-
-      ; If the remaining length of the current vector is 0, continue with the next vector
-      ((= (cdr (car remaining-vecs)) 0) (iter coords (cdr remaining-vecs)))
-
-      ; Iterate by prepending the next coordinate to the coords list, and subtracing one from current vector
-      (else
-        (iter
-          (cons (calc-next-coord (cur-vec remaining-vecs) (cur-coord coords)) coords)
-          (cons (subtract-one-from-vec (cur-vec remaining-vecs)) (cdr remaining-vecs))
-        )
-      )
-    )
-  )
-
-  ; Initial coordinates
-  (iter (list (cons 0 0)) vecs)
-)
-
-(define (find-intersections p q)
-  (set->list (set-remove (set-intersect (list->set p) (list->set q)) (cons 0 0)))
-)
-
-(define (calc-length-from-start-of-path coord coords)
-  (- (- (length coords) (index-of coords coord)) 1)
-)
-
-(define paths-vectors
-  (let ([lines (read "input" line-to-vectors)])
-    (cons (car lines) (car (cdr lines)))
-  )
-)
-
-(define paths-coords (cons
-  (calc-coords-from-vecs (car paths-vectors))
-  (calc-coords-from-vecs (cdr paths-vectors))
-))
-
-(define intersecting-path-coords (find-intersections (car paths-coords) (cdr paths-coords)))
 
 (define distances-from-start
   (map
-    (lambda (coord)
-      (cons
-        (calc-length-from-start-of-path coord (car paths-coords))
-        (calc-length-from-start-of-path coord (cdr paths-coords))
-      )
+    (lambda (point)
+      (apply + (map (cut distance-from-start <> point) paths))
     )
-    intersecting-path-coords
+    intersections
   )
 )
 
-(get-lowest-value (map add-pair distances-from-start))
+(first (sort distances-from-start <))
