@@ -7,45 +7,43 @@
   (+ (* (seat-row seat) 8) (seat-col seat))
 )
 
-(define (line-to-ops line)
+(define (create-partition-operations line)
   (list
     (string->list (substring line 0 7))
     (string->list (substring line 7))
   )
 )
 
-(define (apply-op op nums)
-  (if (index-of '(#\F #\L) op)
-    (take nums (/ (length nums) 2))
-    (drop nums (/ (length nums) 2))
+(define (partition operation lst)
+  (if (index-of '(#\F #\L) operation)
+    (take lst (/ (length lst) 2))
+    (drop lst (/ (length lst) 2))
   )
 )
 
-(define (get-row-col ops)
+(define (generate-seat-from-operations partition-operations)
   (seat
-    (first (foldl (lambda (op rows) (apply-op op rows)) (range 0 128) (first ops)))
-    (first (foldl (lambda (op cols) (apply-op op cols)) (range 0 8) (second ops)))
+    (first (foldl partition (range 0 128) (first partition-operations)))
+    (first (foldl partition (range 0 8) (second partition-operations)))
   )
 )
 
-(define (missing-seat-id lst)
-  (define (iter rest)
-    (if (= (car rest) (+ (cadr rest) 1))
-      (iter (cdr rest))
-      (- (car rest) 1)
+(define (missing-seat-id seats)
+  (define (find-missing-seat-id remaining-seats)
+    (if (= (car remaining-seats) (+ (cadr remaining-seats) 1))
+      (find-missing-seat-id (cdr remaining-seats))
+      (- (car remaining-seats) 1)
     )
   )
 
-  (iter lst)
+  (find-missing-seat-id seats)
 )
 
-(missing-seat-id (sort
+(define seats
   (map
-    seat-id
-    (map
-      get-row-col
-      (read-input-lines #:line-parser line-to-ops)
-    )
-  )
-  >
-))
+    generate-seat-from-operations
+    (read-input-lines #:line-parser create-partition-operations)))
+
+(define seat-ids (map seat-id seats))
+
+(missing-seat-id (sort seat-ids >))

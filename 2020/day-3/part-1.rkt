@@ -2,7 +2,7 @@
 
 (require "../utils.rkt")
 
-(define (get-num-trees lines)
+(define (get-hit-trees lines)
   (define line-length (string-length (car lines))) ; all lines are the same size
 
   (define (iter num-trees x y)
@@ -16,4 +16,4 @@
   (iter 0 3 1)
 )
 
-(get-num-trees (read-input-lines))
+(get-hit-trees (read-input-lines))

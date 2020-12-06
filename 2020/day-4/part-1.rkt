@@ -4,31 +4,41 @@
 ; that turns "byr:1992" into ("byr" "1992").
 
 (require "../utils.rkt")
+(require srfi/26)
 
 (define (is-valid-passport passport)
   (define required-keys (list "byr" "iyr" "eyr" "hgt" "hcl" "ecl" "pid"))
 
-  (define (iter rem-keys rem-passport)
-    (cond
-      ((and (= (length rem-passport) 0) (> (length rem-keys) 0)) false)
-      ((and (= (length rem-passport) 0) (= (length rem-keys) 0)) true)
-      (else (iter (remove (first (car rem-passport)) rem-keys) (cdr rem-passport)))
-    )
+  (define (passport-has-required-keys remaining-keys remaining-passport)
+    (if (= (length remaining-passport) 0)
+      ; If there's no more passport remaining, check to see if we've removed all the required keys
+      (= (length remaining-keys) 0)
+
+      ; Maybe remove the current key from the required keys and continue
+      (passport-has-required-keys
+        (remove (caar remaining-passport) remaining-keys)
+        (cdr remaining-passport)))
   )
 
-  (iter required-keys passport)
+  (passport-has-required-keys required-keys passport)
 )
 
-(define passports
+; List of passport items, e.g. ("iyr:2010" "ecl:gry" ...)
+(define raw-passports
   (map
-    (lambda (x) (map
-      (lambda (y) (string-split y ":"))
-      x)
-    )
-    (map
-      string-split
-      (read-input-file #:file-parser (lambda (f) (string-split f "\n\n")))
-    )
+    string-split
+    (read-input-file #:file-parser (cut string-split <> "\n\n")))
+)
+
+; List of processed passports, e.g. (("iyr" "2010" ("ecl" "gry")))
+(define passports
+  ; Map over each "raw" passport, and split each of its keys by ":"
+  (map
+    (lambda (raw-passport)
+      (map
+        (lambda (passport-item) (string-split passport-item ":"))
+        raw-passport))
+    raw-passports
   )
 )
 

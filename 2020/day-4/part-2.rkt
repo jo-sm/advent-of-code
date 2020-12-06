@@ -17,7 +17,7 @@
 (struct height (length unit))
 
 (define (item-to-kv item)
-  (define-values (key raw-value) (list->values (string-split item ":")))
+  (define-values (key raw-value) (apply values (string-split item ":")))
   (define value (case key
     (("byr" "iyr" "eyr") (let ([n (string->number raw-value)])
       (if n n 0)
@@ -75,7 +75,7 @@
     (lambda (item) (map item-to-kv item))
     (map
       string-split
-      (read-input-file #:file-parser (lambda (f) (string-split f "\n\n")))
+      (read-input-file #:file-parser (cut string-split <> "\n\n"))
     )
   )
 )

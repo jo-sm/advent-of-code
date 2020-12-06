@@ -28,7 +28,7 @@
     string-split
     (read-input-file #:file-parser (cut string-split <> "\n\n"))))
 
-(apply +
-  (map
-    (cut apply answers-in-all <>)
-    groups-answers))
+; Sum number of answers that were in all of each group
+(apply + (map
+  (cut apply answers-in-all <>)
+  groups-answers))

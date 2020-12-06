@@ -2,18 +2,23 @@
 
 (require "../utils.rkt")
 
-(struct pos (i j))
-
 (define (is-valid-password line)
-  (let*-values (
-    [(raw-pos raw-char password) (list->values (string-split line))]
-    [(positions) (apply pos (map string->number (string-split raw-pos "-")))]
-    [(char) (string-ref raw-char 0)]
-  )
-    (xor
-      (equal? (string-ref password (- (pos-i positions) 1)) char)
-      (equal? (string-ref password (- (pos-j positions) 1)) char)
-    )
+  (define-values
+    (raw-expected-positions raw-char password)
+    (apply values (string-split line)))
+
+  (define-values
+    (pos-i pos-j)
+    (apply
+      values
+      (map string->number (string-split raw-expected-positions "-"))))
+
+  (define expected-char (string-ref raw-char 0))
+
+  ; `expected-char` must be at either `pos-i` or `pos-j`, but not both
+  (xor
+    (equal? (string-ref password (- pos-i 1)) expected-char)
+    (equal? (string-ref password (- pos-j 1)) expected-char)
   )
 )
 
