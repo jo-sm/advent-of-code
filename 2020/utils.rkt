@@ -20,3 +20,9 @@
 )
 
 (provide list->values)
+
+(define (truthy? v)
+  (not (not v))
+)
+
+(provide truthy?)
