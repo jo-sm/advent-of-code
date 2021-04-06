@@ -5,13 +5,10 @@
 (define (generate-path end start lst)
   (define (iter result)
     (if (equal? (first result) end)
-      result
-      (iter (cons (findf (lambda (i) (equal? (first (first result)) (second i))) lst) result))
-    )
-  )
+        result
+        (iter (cons (findf (lambda (i) (equal? (first (first result)) (second i))) lst) result))))
 
-  (iter (list start))
-)
+  (iter (list start)))
 
 (define (nearest-neighbor a b end lst)
   (define path-a (generate-path end a orbits))
@@ -23,14 +20,9 @@
     (define next-a (second a))
     (define next-b (second b))
 
-    (if (and (equal? cur-a cur-b) (equal? next-a next-b))
-      (iter (cdr a) (cdr b))
-      cur-a
-    )
-  )
+    (if (and (equal? cur-a cur-b) (equal? next-a next-b)) (iter (cdr a) (cdr b)) cur-a))
 
-  (iter path-a path-b)
-)
+  (iter path-a path-b))
 
 (define orbits (read "input" (lambda (line) (string-split line ")"))))
 (define COM (findf (lambda (i) (equal? (first i) "COM")) orbits))
@@ -52,4 +44,3 @@
   the first item of each path as well.
 |#
 (- (length (append path-closest-you path-closest-santa)) 4)
-

@@ -8,12 +8,9 @@
 (define (generate-path end start lst)
   (define (iter result)
     (if (equal? (first result) end)
-      result
-      (iter (cons (findf (lambda (i) (equal? (first (first result)) (second i))) lst) result))
-    )
-  )
+        result
+        (iter (cons (findf (lambda (i) (equal? (first (first result)) (second i))) lst) result))))
 
-  (iter (list start))
-)
+  (iter (list start)))
 
 (foldr (lambda (i memo) (+ (length (generate-path COM i orbits)) memo)) 0 orbits)

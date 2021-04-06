@@ -2,38 +2,35 @@
 
 (define password-range (range 128392 643281))
 
-(define (char->number c)
-  (- (char->integer c) (char->integer #\0))
-)
+(define (number->digits number)
+  (define (split-into-digits digits remaining-number)
+    (define-values (next-remaining-number digit) (quotient/remainder remaining-number 10))
+
+    (if (= next-remaining-number 0)
+        ; The quotient is 0, meaning that the remainder is the final digit
+        ; Return this digit + the previous ones
+        (cons digit digits)
+
+        ; The quotient isn't 0, continue
+        (split-into-digits (cons digit digits) next-remaining-number)))
+
+  (split-into-digits '() number))
 
 (define (always-increasing password)
-  (define (iter result digit remaining-password)
-    (cond
-      ((null? remaining-password) result)
-      ((>= (car remaining-password) digit) (iter true (car remaining-password) (cdr remaining-password)))
-      (else (iter false 0 null))
-    )
-  )
-
-  (iter true (car password) (cdr password))
-)
+  (equal? (sort password <) password))
 
 (define (has-duplicate password)
-  (define (iter result digit remaining-password)
+  (define (iter remaining-password)
     (cond
-      ((or (equal? result true) (null? remaining-password)) result)
-      ((= digit (car remaining-password)) (iter true (car remaining-password) (cdr remaining-password)))
-      (else (iter false (car remaining-password) (cdr remaining-password)))
-    )
-  )
+      [(= (length remaining-password) 1) false]
+      [(= (car remaining-password) (cadr remaining-password)) true]
+      [else (iter (cdr remaining-password))]))
 
-  (iter false (car password) (cdr password))
-)
+  (iter password))
 
 (define (is-valid-password i)
-  (define pieces (map char->number (string->list (number->string i))))
+  (define pieces (number->digits i))
 
-  (and (always-increasing pieces) (has-duplicate pieces))
-)
+  (and (always-increasing pieces) (has-duplicate pieces)))
 
 (length (filter is-valid-password password-range))

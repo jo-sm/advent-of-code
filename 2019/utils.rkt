@@ -6,11 +6,11 @@
 (define (read [filename "input"] [mapf identity])
   (define lines (port->lines (open-input-file filename #:mode 'text)))
 
-  (map mapf lines)
-)
+  (map mapf lines))
 (provide read)
 
-(define (add-pair pair) (+ (car pair) (cdr pair)))
+(define (add-pair pair)
+  (+ (car pair) (cdr pair)))
 (provide add-pair)
 
 (define (create-jpg filename lines #:scaling-factor [scaling-factor 2.0])
@@ -22,34 +22,29 @@
   (define x 0)
   (define y 0)
 
-  (for-each (lambda (line) (begin
-    (for-each (lambda (pixel) (begin
-      (send dc set-pixel x y pixel)
+  (for-each (lambda (line)
+              (begin
+                (for-each (lambda (pixel)
+                            (begin
+                              (send dc set-pixel x y pixel)
 
-      (set! x (+ x 1))
-    )) line)
+                              (set! x (+ x 1))))
+                          line)
 
-    (set! x 0)
-    (set! y (+ y 1))
-  )) lines)
+                (set! x 0)
+                (set! y (+ y 1))))
+            lines)
 
-  (send target save-file filename 'jpeg #:unscaled? true)
-)
+  (send target save-file filename 'jpeg #:unscaled? true))
 (provide create-jpg)
 
 (define (get-color name)
-  (send the-color-database find-color name)
-)
+  (send the-color-database find-color name))
 (provide get-color)
 
 (define (split-by lst i)
   (define (iter result rest)
-    (if (null? rest)
-      (reverse result)
-      (iter (cons (take rest i) result) (drop rest i))
-    )
-  )
+    (if (null? rest) (reverse result) (iter (cons (take rest i) result) (drop rest i))))
 
-  (iter null lst)
-)
+  (iter null lst))
 (provide split-by)

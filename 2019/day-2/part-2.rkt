@@ -17,13 +17,14 @@
 (require "../utils.rkt")
 (require "../Intcode/runner.rkt")
 
-(define program-raw (flatten (read "Intcode.program" (lambda (line) (map (lambda (i) (string->number i)) (string-split line ","))))))
+(define program-raw
+  (flatten (read "Intcode.program"
+                 (lambda (line) (map (lambda (i) (string->number i)) (string-split line ","))))))
 
 (define (run-program a b)
   (define program (list-set (list-set program-raw 1 a) 2 b))
 
-  (first (second (start program)))
-)
+  (first (second (start program))))
 
 ; Run a given program
 ;
@@ -35,10 +36,8 @@
   (define output (run-program a b))
 
   (cond
-    ((equal? output expected) (+ (* 100 a) b))
-    ((< output expected) (run (+ a 1) (+ b 1) expected conv))
-    ((> output expected) (run (- a conv) (- b (+ conv 1)) expected (+ conv 1)))
-  )
-)
+    [(equal? output expected) (+ (* 100 a) b)]
+    [(< output expected) (run (+ a 1) (+ b 1) expected conv)]
+    [(> output expected) (run (- a conv) (- b (+ conv 1)) expected (+ conv 1))]))
 
 (run 0 0 19690720 0)
