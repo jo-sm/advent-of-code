@@ -7,18 +7,14 @@
          rackunit
          srfi/26)
 
-(define (smallest-number numbers)
-  (for/fold ([result +inf.0]) ([num numbers])
-    (if (< num result) num result)))
-
 (define (dimensions->sides dimensions)
   (~>> (string-split dimensions "x") (map string->number)))
 
 (define (dimensions->sqft dimensions)
   (define surface-areas (~>> dimensions dimensions->sides (combinations _ 2) (map (cut apply * <>))))
-  (define smallest (smallest-number surface-areas))
+  (define smallest (car (sort surface-areas <)))
 
-  (~> surface-areas (map (lambda (side) (* 2 side)) _) (apply + _) (+ smallest)))
+  (~> surface-areas (map (cut * 2 <>) _) (apply + _) (+ smallest)))
 
 (define (dimensions->ribbon-length dimensions)
   (define sides (~> (dimensions->sides dimensions) (sort <)))

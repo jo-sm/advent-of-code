@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require "./utils.rkt"
+(require "../utils.rkt"
          threading
          racket/list
          srfi/26
@@ -17,8 +17,10 @@ honestly just understanding part 2 as it was really wordy.
 ; Returns the longest provided list. If two lists are of equal length and would be
 ; considered the longest the first is returned.
 (define (longest . lists)
-  (for/fold ([result '()]) ([lst lists])
-    (if (> (length lst) (length result)) lst result)))
+  (car (sort lists (λ (a b) (> (length a) (length b))))))
+
+(define (invert-bit bit)
+  (if (char=? bit #\0) #\1 #\0))
 
 ; Given a list of bitlists, find the most common bit in all lists at a given position.
 (define (get-most-common-bit bitlists i)
@@ -28,9 +30,8 @@ honestly just understanding part 2 as it was really wordy.
                                   (partition (λ (char) (char=? char #\1))))])
     (car (longest ones zeros))))
 
-; Opposite of `get-most-common-bit`.
 (define (get-least-common-bit bitlists i)
-  (let ([bit (get-most-common-bit bitlists i)]) (if (char=? bit #\0) #\1 #\0)))
+  (invert-bit (get-most-common-bit bitlists i)))
 
 ; Translates a list of #\0 and #\1 chars into a number
 (define (bitlist->number bitlist)
@@ -39,25 +40,21 @@ honestly just understanding part 2 as it was really wordy.
 (define (part-1 input)
   (define size (length (car input)))
   (define most-common-bits (~>> size range (map (cut get-most-common-bit input <>))))
-  (define least-common-bits (~>> size range (map (cut get-least-common-bit input <>))))
+  (define least-common-bits (map invert-bit most-common-bits))
 
   (* (bitlist->number most-common-bits) (bitlist->number least-common-bits)))
 
 (define (part-2 input)
   (define size (length (car input)))
-  (define oxygen-gen-rating
+  (define (get-rating bit-fn)
     (for/fold ([remaining input] #:result (car remaining))
               ([i (range size)] #:break (= (length remaining) 1))
-      (define cur-most-common-bit (get-most-common-bit remaining i))
+      (define cur-bit (bit-fn remaining i))
 
-      (filter (λ (num) (char=? (list-ref num i) cur-most-common-bit)) remaining)))
+      (filter (λ (num) (char=? (list-ref num i) cur-bit)) remaining)))
 
-  (define co2-scrubber-rating
-    (for/fold ([remaining input] #:result (car remaining))
-              ([i (range size)] #:break (= (length remaining) 1))
-      (define cur-least-common-bit (get-least-common-bit remaining i))
-
-      (filter (λ (num) (char=? (list-ref num i) cur-least-common-bit)) remaining)))
+  (define oxygen-gen-rating (get-rating get-most-common-bit))
+  (define co2-scrubber-rating (get-rating get-least-common-bit))
 
   (* (bitlist->number oxygen-gen-rating) (bitlist->number co2-scrubber-rating)))
 
@@ -75,7 +72,7 @@ honestly just understanding part 2 as it was really wordy.
                  "11001"
                  "00010"
                  "01010")))
-(define input (read-input-lines "03.rktd" #:line-parser string->list))
+(define input (parse "03.rktd" #t #:parser string->list))
 
 (check-eq? (part-1 example) 198)
 (check-eq? (part-1 input) 2498354)

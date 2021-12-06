@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require "./utils.rkt"
+(require "../utils.rkt"
          racket/list
          rackunit
          threading)
@@ -43,7 +43,7 @@ I want to find a better and more elegant approach using the same method.
            (cons num prev-nums)))))
   (~>> differences (filter positive?) length))
 
-(define parsed (read-input-lines "01.rktd" #:line-parser string->number))
+(define parsed (parse "01.rktd" #t #:parser string->number))
 (define example '(199 200 208 210 200 207 240 269 260 263))
 
 (check-eq? (part-1 example) 7)

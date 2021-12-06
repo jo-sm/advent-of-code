@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require "./utils.rkt"
+(require "../utils.rkt"
          rackunit
          threading
          racket/string
@@ -33,15 +33,16 @@
       [(cons "down" u) (values position depth (+ aim u))]
       [(cons "up" u) (values position depth (- aim u))])))
 
-(define (parse raw)
-  ; TODO maybe use threading from qi
-  (~>> raw (map string-split) (map (λ (c) (cons (car c) (string->number (cadr c)))))))
+(define (parser line)
+  (define split (string-split line))
 
-(define example (list "forward 5" "down 5" "forward 8" "up 3" "down 8" "forward 2"))
-(define input (read-input-lines "02.rktd"))
+  (cons (car split) (string->number (cadr split))))
 
-(check-eq? (part-1 (parse example)) 150)
-(check-eq? (part-1 (parse input)) 1451208)
+(define example (map parser (list "forward 5" "down 5" "forward 8" "up 3" "down 8" "forward 2")))
+(define input (parse "02.rktd" #t #:parser parser))
 
-(check-eq? (part-2 (parse example)) 900)
-(check-eq? (part-2 (parse input)) 1620141160)
+(check-eq? (part-1 example) 150)
+(check-eq? (part-1 input) 1451208)
+
+(check-eq? (part-2 example) 900)
+(check-eq? (part-2 input) 1620141160)

@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require "./utils.rkt"
+(require "../utils.rkt"
          threading
          racket/list
          racket/string
@@ -28,21 +28,6 @@ the example is made in such a way that it accepts slightly invalid solutions - i
 is an actual solution, but this isn't generally true, and so after a lot of head scratching I realized I need to actually make sure that there
 was a row/column that had a match on the board before calculating the score.
 |#
-
-; Assumes a neat n⨉n list
-(define (transpose matrix)
-  (for/list ([i (range (length matrix))])
-    (map (λ (row) (list-ref row i)) matrix)))
-
-(define (mapmap pred lists)
-  (map (λ (lst) (map pred lst)) lists))
-
-(define (chunk lst n)
-  (let loop ([remaining lst] [result '()])
-    (cond
-      [(null? remaining) (reverse result)]
-      [(> n (length remaining)) (loop '() (cons remaining result))]
-      [else (loop (drop remaining n) (cons (take remaining n) result))])))
 
 (define (get-first-winning-row board-config nums len)
   (define nums-in-rows (map (λ (row) (filter (λ (n) (member n row)) nums)) board-config))
@@ -89,6 +74,7 @@ was a row/column that had a match on the board before calculating the score.
   (list nums-to-draw boards))
 
 (define example
+  ; trim the string so the example above looks a little nicer (basically remove the first line)
   (~>
    "
 7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
@@ -110,10 +96,9 @@ was a row/column that had a match on the board before calculating the score.
 18  8 23 26 20
 22 11 13  6  5
 2  0 12  3  7"
-   ; trim the string so the example above looks a little nicer (basically remove the first line)
    string-trim
    parser))
-(define input (read-input-file "04.rktd" #:file-parser parser))
+(define input (parse "04.rktd" #:parser parser))
 
 (check-eq? (part-1 example) 4512)
 (check-eq? (part-1 input) 16716)
