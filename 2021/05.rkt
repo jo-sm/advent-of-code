@@ -18,6 +18,9 @@ nested maps) but it was a bad decision in hindsight.
 Another complication is the fact that this solution is really slow, taking around 1 minute to run parts 1 and 2 on
 the example and input. It's likely due to using `flatten` on such a large list. Eliminating `flatten` by folding rather
 than mapping over the input and using `cons` may improve speed.
+
+Update: removing flatten in favor of `foldl` significantly improves performance. Another alternative to explore could be
+to use sets.
 |#
 
 (define x1 caar)
@@ -55,9 +58,9 @@ than mapping over the input and using `cons` may improve speed.
        (filter (λ (pair)
                  (or (= (x1 pair) (y1 pair))
                      (= (x2 pair) (y2 pair)))))
-       (map pair->line)
-       flatten
-       (chunk _ 2)
+       (foldl (λ (pair acc)
+                (append (pair->line pair) acc))
+              '())
        (group-by identity)
        (filter (λ (x)
                  (> (length x) 1)))
@@ -66,9 +69,9 @@ than mapping over the input and using `cons` may improve speed.
 
 (define (part-2 input)
   (~>> input
-       (map pair->line)
-       flatten
-       (chunk _ 2)
+       (foldl (λ (pair acc)
+                (append (pair->line pair) acc))
+              '())
        (group-by identity)
        (filter (λ (x)
                  (> (length x) 1)))
