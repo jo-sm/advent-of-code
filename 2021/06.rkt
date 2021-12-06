@@ -15,6 +15,7 @@ I don't know if it would be possible to avoid the use of `nested-length` and kee
 works, but it's worth exploring.
 |#
 
+; TODO: turn into syntax, like `define/memo` (I know there is the `memoize` package but I want to do it myself :-))
 (define (memoize proc)
   (define cache (make-hash))
 
