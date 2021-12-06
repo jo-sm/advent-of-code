@@ -13,7 +13,8 @@
 |#
 
 (define (part-1 instructions)
-  (for/fold ([position 0] [depth 0] #:result (* position depth)) ([i instructions])
+  (for/fold ([position 0] [depth 0] #:result (* position depth))
+    ([i instructions])
     (match i
       [(cons "forward" p) (values (+ position p) depth)]
       [(cons "down" d) (values position (+ depth d))]
@@ -27,7 +28,8 @@
   example and realized that's not the case anymore.
 |#
 (define (part-2 instructions)
-  (for/fold ([position 0] [depth 0] [aim 0] #:result (* position depth)) ([i instructions])
+  (for/fold ([position 0] [depth 0] [aim 0] #:result (* position depth))
+    ([i instructions])
     (match i
       [(cons "forward" u) (values (+ position u) (+ depth (* aim u)) aim)]
       [(cons "down" u) (values position depth (+ aim u))]

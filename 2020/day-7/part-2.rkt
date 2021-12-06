@@ -16,19 +16,20 @@
 (define (could-contain-bag-type bag-type bags)
   (define (iter bag-type bags)
     (define next-bag-types
-      (second (findf (lambda (bag) (equal? (first bag) (second bag-type))) bags)))
+      (second (findf (lambda (bag) (equal? (first bag) (second bag-type)))
+                bags)))
 
     (if (length next-bag-types)
-        (list (first bag-type) (map (lambda (nbt) (iter nbt bags)) next-bag-types))
-        (first bag-type)))
+      (list (first bag-type) (map (lambda (nbt) (iter nbt bags)) next-bag-types))
+      (first bag-type)))
 
   (define (iter2 bag-declaration)
     (define num-this-bag (string->number (first bag-declaration)))
     (define bags-inside (second bag-declaration))
 
     (if (null? bags-inside)
-        num-this-bag
-        (+ num-this-bag (* num-this-bag (apply + (map iter2 bags-inside))))))
+      num-this-bag
+      (+ num-this-bag (* num-this-bag (apply + (map iter2 bags-inside))))))
 
   (- (iter2 (iter bag-type bags)) 1))
 

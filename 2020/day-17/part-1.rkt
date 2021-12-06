@@ -22,18 +22,22 @@
   (define active-surrounding (set-intersect active-coords (list->set (surrounding-coords coord))))
 
   (if is-currently-active
-      (and (<= 2 (set-count active-surrounding) 3) coord)
-      (and (= (set-count active-surrounding) 3) coord)))
+    (and (<= 2 (set-count active-surrounding) 3)
+         coord)
+    (and (= (set-count active-surrounding) 3)
+         coord)))
 
 (define (get-initial-active-coords file)
   (let ([lines (file->lines file)])
-    (for/fold ([result (set)]) ([y (range 0 (length lines))])
+    (for/fold ([result (set)])
+      ([y (range 0 (length lines))])
       (let* ([line (string->list (list-ref lines y))]
              [active-x-coords (indexes-where line (lambda (c) (eq? c #\#)))])
         (foldl (lambda (x result) (set-add result (point x y 0))) result active-x-coords)))))
 
 (define (run initial-active-coords n)
-  (set-count (for/fold ([active initial-active-coords]) ([i (range 0 n)])
+  (set-count (for/fold ([active initial-active-coords])
+               ([i (range 0 n)])
                (let ([all-coords (get-all-points active)])
                  (list->set (filter (lambda (c) c)
                                     (set-map all-coords

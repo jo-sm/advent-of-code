@@ -22,7 +22,9 @@
 (require "../utils.rkt")
 
 (define (list-ref-safe lst i)
-  (if (>= i (length lst)) null (list-ref lst i)))
+  (if (>= i (length lst))
+    null
+    (list-ref lst i)))
 
 (define (cdr-until-false lst proc)
   (cond

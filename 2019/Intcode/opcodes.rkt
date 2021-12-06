@@ -27,13 +27,13 @@
 
 (define (opcode-proc--3 program in out pos rb i)
   (if (void? in)
-      (list INPUT program (void) out pos rb)
-      (list CONTINUE
-            (update-program program (translate-write-pair program rb i) in)
-            (void)
-            out
-            (+ pos 2)
-            rb)))
+    (list INPUT program (void) out pos rb)
+    (list CONTINUE
+          (update-program program (translate-write-pair program rb i) in)
+          (void)
+          out
+          (+ pos 2)
+          rb)))
 
 (define (opcode-proc--4 program in out pos rb i)
   (define new-output (list (translate-mode-param-pair program rb i)))
@@ -43,22 +43,24 @@
 (define (opcode-proc--5 program in out pos rb i j)
   (define new-pos
     (if (not (= (translate-mode-param-pair program rb i) 0))
-        (translate-mode-param-pair program rb j)
-        (+ pos 3)))
+      (translate-mode-param-pair program rb j)
+      (+ pos 3)))
 
   (list CONTINUE program in out new-pos rb))
 
 (define (opcode-proc--6 program in out pos rb i j)
   (define new-pos
     (if (= (translate-mode-param-pair program rb i) 0)
-        (translate-mode-param-pair program rb j)
-        (+ pos 3)))
+      (translate-mode-param-pair program rb j)
+      (+ pos 3)))
 
   (list CONTINUE program in out new-pos rb))
 
 (define (opcode-proc--7 program in out pos rb i j k)
   (define new-value
-    (if (< (translate-mode-param-pair program rb i) (translate-mode-param-pair program rb j)) 1 0))
+    (if (< (translate-mode-param-pair program rb i) (translate-mode-param-pair program rb j))
+      1
+      0))
 
   (list CONTINUE
         (update-program program (translate-write-pair program rb k) new-value)
@@ -69,7 +71,9 @@
 
 (define (opcode-proc--8 program in out pos rb i j k)
   (define new-value
-    (if (= (translate-mode-param-pair program rb i) (translate-mode-param-pair program rb j)) 1 0))
+    (if (= (translate-mode-param-pair program rb i) (translate-mode-param-pair program rb j))
+      1
+      0))
 
   (list CONTINUE
         (update-program program (translate-write-pair program rb k) new-value)

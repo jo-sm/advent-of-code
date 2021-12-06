@@ -7,12 +7,12 @@
     (define-values (next-remaining-number digit) (quotient/remainder remaining-number 10))
 
     (if (= next-remaining-number 0)
-        ; The quotient is 0, meaning that the remainder is the final digit
-        ; Return this digit + the previous ones
-        (cons digit digits)
+      ; The quotient is 0, meaning that the remainder is the final digit
+      ; Return this digit + the previous ones
+      (cons digit digits)
 
-        ; The quotient isn't 0, continue
-        (split-into-digits (cons digit digits) next-remaining-number)))
+      ; The quotient isn't 0, continue
+      (split-into-digits (cons digit digits) next-remaining-number)))
 
   (split-into-digits '() number))
 
@@ -31,6 +31,7 @@
 (define (is-valid-password i)
   (define pieces (number->digits i))
 
-  (and (always-increasing pieces) (has-duplicate pieces)))
+  (and (always-increasing pieces)
+       (has-duplicate pieces)))
 
 (length (filter is-valid-password password-range))

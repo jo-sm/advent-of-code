@@ -25,10 +25,12 @@
       (cond
         [(null? remain) intermediate]
 
-        [(and (= (length intermediate) 0) (list? (car remain)))
+        [(and (= (length intermediate) 0)
+              (list? (car remain)))
          (calc-add (cons (calculate (car remain)) intermediate) (cdr remain))]
         [(= (length intermediate) 0) (calc-add (cons (car remain) intermediate) (cdr remain))]
-        [(and (equal? (car remain) #\+) (list? (cadr remain)))
+        [(and (equal? (car remain) #\+)
+              (list? (cadr remain)))
          (calc-add (cons (+ (car intermediate) (calculate (cadr remain))) (cdr intermediate))
                    (cddr remain))]
         [(equal? (car remain) #\+)

@@ -44,7 +44,9 @@
 
 (define (split-by lst i)
   (define (iter result rest)
-    (if (null? rest) (reverse result) (iter (cons (take rest i) result) (drop rest i))))
+    (if (null? rest)
+      (reverse result)
+      (iter (cons (take rest i) result) (drop rest i))))
 
   (iter null lst))
 (provide split-by)

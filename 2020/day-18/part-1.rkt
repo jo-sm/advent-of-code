@@ -23,11 +23,15 @@
   (define (calculate result remain)
     (cond
       [(null? remain) result]
-      [(and (= 0 result) (list? (car remain))) (calculate (calculate 0 (car remain)) (cdr remain))]
+      [(and (= 0 result)
+            (list? (car remain)))
+       (calculate (calculate 0 (car remain)) (cdr remain))]
       [(= 0 result) (calculate (car remain) (cdr remain))]
-      [(and (equal? (car remain) #\+) (list? (cadr remain)))
+      [(and (equal? (car remain) #\+)
+            (list? (cadr remain)))
        (calculate (+ result (calculate 0 (cadr remain))) (cdr remain))]
-      [(and (equal? (car remain) #\*) (list? (cadr remain)))
+      [(and (equal? (car remain) #\*)
+            (list? (cadr remain)))
        (calculate (* result (calculate 0 (cadr remain))) (cdr remain))]
       [(equal? (car remain) #\+) (calculate (+ result (cadr remain)) (cdr remain))]
       [(equal? (car remain) #\*) (calculate (* result (cadr remain)) (cdr remain))]

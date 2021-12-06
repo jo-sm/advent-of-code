@@ -5,8 +5,10 @@
 (define (generate-path end start lst)
   (define (iter result)
     (if (equal? (first result) end)
-        result
-        (iter (cons (findf (lambda (i) (equal? (first (first result)) (second i))) lst) result))))
+      result
+      (iter (cons (findf (lambda (i) (equal? (first (first result)) (second i)))
+                    lst)
+                  result))))
 
   (iter (list start)))
 
@@ -20,14 +22,23 @@
     (define next-a (second a))
     (define next-b (second b))
 
-    (if (and (equal? cur-a cur-b) (equal? next-a next-b)) (iter (cdr a) (cdr b)) cur-a))
+    (if (and (equal? cur-a cur-b)
+             (equal? next-a next-b))
+      (iter (cdr a) (cdr b))
+      cur-a))
 
   (iter path-a path-b))
 
 (define orbits (read "input" (lambda (line) (string-split line ")"))))
-(define COM (findf (lambda (i) (equal? (first i) "COM")) orbits))
-(define SAN (findf (lambda (i) (equal? (second i) "SAN")) orbits))
-(define YOU (findf (lambda (i) (equal? (second i) "YOU")) orbits))
+(define COM
+  (findf (lambda (i) (equal? (first i) "COM"))
+    orbits))
+(define SAN
+  (findf (lambda (i) (equal? (second i) "SAN"))
+    orbits))
+(define YOU
+  (findf (lambda (i) (equal? (second i) "YOU"))
+    orbits))
 (define closest-same (nearest-neighbor SAN YOU COM orbits))
 
 (define path-closest-you (generate-path closest-same YOU orbits))

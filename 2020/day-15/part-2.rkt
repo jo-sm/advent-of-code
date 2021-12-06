@@ -15,7 +15,9 @@ Don't even talk to me or my son about immutable hashes.
 
   (hash-set! result current-number (- n 1))
 
-  (if (= m n) current-number (play m next-current-number result (+ n 1))))
+  (if (= m n)
+    current-number
+    (play m next-current-number result (+ n 1))))
 
 (define example '(0 3 6))
 (define input '(20 9 11 0 1 2))

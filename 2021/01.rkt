@@ -18,9 +18,14 @@ it got the right answer on the first try.
 
 (define (part-1 nums)
   (define differences
-    (for/fold ([diffs '()] [prev-num +nan.0] #:result diffs) ([num nums])
-      (if (empty? diffs) (values '(0) num) (values (cons (- num prev-num) diffs) num))))
-  (~>> differences (filter positive?) length))
+    (for/fold ([diffs '()] [prev-num +nan.0] #:result diffs)
+      ([num nums])
+      (if (empty? diffs)
+        (values '(0) num)
+        (values (cons (- num prev-num) diffs) num))))
+  (~>> differences
+       (filter positive?)
+       length))
 
 #|
 Mostly the same as part 1, except this time instead of taking the difference between two numbers,
@@ -35,13 +40,15 @@ I want to find a better and more elegant approach using the same method.
 
 (define (part-2 nums)
   (define differences
-    (for/fold ([diffs '()] [prev-nums '()] #:result diffs) ([num nums])
+    (for/fold ([diffs '()] [prev-nums '()] #:result diffs)
+      ([num nums])
       (if (< (length prev-nums) 3)
-          (values diffs (cons num prev-nums))
-          (values
-           (cons (- (apply + (cons num (take prev-nums 2))) (apply + (take prev-nums 3))) diffs)
-           (cons num prev-nums)))))
-  (~>> differences (filter positive?) length))
+        (values diffs (cons num prev-nums))
+        (values (cons (- (apply + (cons num (take prev-nums 2))) (apply + (take prev-nums 3))) diffs)
+                (cons num prev-nums)))))
+  (~>> differences
+       (filter positive?)
+       length))
 
 (define parsed (parse "01.rktd" #t #:parser string->number))
 (define example '(199 200 208 210 200 207 240 269 260 263))

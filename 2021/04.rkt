@@ -30,53 +30,80 @@ was a row/column that had a match on the board before calculating the score.
 |#
 
 (define (get-first-winning-row board-config nums len)
-  (define nums-in-rows (map (λ (row) (filter (λ (n) (member n row)) nums)) board-config))
+  (define nums-in-rows
+    (map (λ (row)
+           (filter (λ (n)
+                     (member n row))
+                   nums))
+         board-config))
 
-  (findf (λ (n) (= len (length n))) nums-in-rows))
+  (findf (λ (n)
+           (= len (length n)))
+    nums-in-rows))
 
 (define (has-winning-row? board nums)
-  (or (get-first-winning-row board nums 5) (get-first-winning-row (transpose board) nums 5)))
+  (or (get-first-winning-row board nums 5)
+      (get-first-winning-row (transpose board) nums 5)))
 
 (define (calculate-score board nums)
-  (~>> board flatten (remove* nums) (apply +) (* (last nums))))
+  (~>> board
+       flatten
+       (remove* nums)
+       (apply +)
+       (* (last nums))))
 
 (define (part-1 input)
   (match-define (list nums-to-draw boards) input)
 
   (let search ([n 5])
     (define drawn-nums (take nums-to-draw n))
-    (define winning-board (findf (λ (board) (has-winning-row? board drawn-nums)) boards))
+    (define winning-board
+      (findf (λ (board)
+               (has-winning-row? board drawn-nums))
+        boards))
 
-    (if winning-board (calculate-score winning-board drawn-nums) (search (add1 n)))))
+    (if winning-board
+      (calculate-score winning-board drawn-nums)
+      (search (add1 n)))))
 
 (define (part-2 input)
   (match-define (list nums-to-draw boards) input)
 
   (let search ([remaining-boards boards] [n 5])
     (define drawn-nums (take nums-to-draw n))
-    (define winning-boards (filter (λ (board) (has-winning-row? board drawn-nums)) remaining-boards))
+    (define winning-boards
+      (filter (λ (board)
+                (has-winning-row? board drawn-nums))
+              remaining-boards))
 
     (cond
-      [(and (= (length remaining-boards) 1) (not (null? winning-boards)))
+      [(and (= (length remaining-boards) 1)
+            (not (null? winning-boards)))
        (calculate-score (car remaining-boards) drawn-nums)]
       [(not (null? winning-boards)) (search (remove* winning-boards remaining-boards) (add1 n))]
       [else (search remaining-boards (add1 n))])))
 
 (define (parser raw)
   (define lines (string-split raw "\n"))
-  (define nums-to-draw (~> (car lines) (string-split ",") (map string->number _)))
+  (define nums-to-draw
+    (~> (car lines)
+        (string-split ",")
+        (map string->number _)))
   (define boards
     (~> (cdr lines)
         (chunk 6)
         (map cdr _)
-        (mapmap (λ (line) (~> line string-split (map string->number _))) _)))
+        (mapmap (λ (line)
+                  (~> line
+                      string-split
+                      (map string->number _)))
+                _)))
 
   (list nums-to-draw boards))
 
 (define example
   ; trim the string so the example above looks a little nicer (basically remove the first line)
-  (~>
-   "
+  (~> "
 7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
 
 22 13 17 11  0
@@ -96,8 +123,8 @@ was a row/column that had a match on the board before calculating the score.
 18  8 23 26 20
 22 11 13  6  5
 2  0 12  3  7"
-   string-trim
-   parser))
+      string-trim
+      parser))
 (define input (parse "04.rktd" #:parser parser))
 
 (check-eq? (part-1 example) 4512)

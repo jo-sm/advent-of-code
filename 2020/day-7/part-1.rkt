@@ -16,10 +16,14 @@
   (define (iter bag-type bags)
     (define a
       (map first
-           (filter (lambda (bag) (findf (lambda (g) (equal? (second g) bag-type)) (second bag)))
+           (filter (lambda (bag)
+                     (findf (lambda (g) (equal? (second g) bag-type))
+                       (second bag)))
                    bags)))
 
-    (if (length a) (append a (map (cut iter <> bags) a)) '()))
+    (if (length a)
+      (append a (map (cut iter <> bags) a))
+      '()))
 
   (list->set (flatten (iter bag-type bags))))
 

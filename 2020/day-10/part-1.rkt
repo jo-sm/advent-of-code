@@ -11,10 +11,10 @@
 
   (define (generate-joltage-difference-list differences remaining-joltages)
     (if (= (length remaining-joltages) 1)
-        differences
-        (generate-joltage-difference-list
-         (append differences (list (- (cadr remaining-joltages) (car remaining-joltages))))
-         (cdr remaining-joltages))))
+      differences
+      (generate-joltage-difference-list
+       (append differences (list (- (cadr remaining-joltages) (car remaining-joltages))))
+       (cdr remaining-joltages))))
 
   (generate-joltage-difference-list '() all-joltages))
 

@@ -43,14 +43,19 @@
           sections))
 
 (define (validate-ticket sections ticket)
-  (for/fold ([invalid #false]) ([ticket-num ticket])
+  (for/fold ([invalid #false])
+    ([ticket-num ticket])
     (let ([found-sections (find-sections sections ticket-num)])
       ; I SPENT A LOT OF TIME ON THIS LINE
-      (if (empty? found-sections) #t invalid))))
+      (if (empty? found-sections)
+        #t
+        invalid))))
 
 (define (sort-sections sections tickets)
   (define (iter remaining-sections sorted-sections remaining-nums)
-    (let* ([next-num (if (empty? remaining-nums) 0 (car remaining-nums))]
+    (let* ([next-num (if (empty? remaining-nums)
+                       0
+                       (car remaining-nums))]
            [nums (map (cut list-ref <> next-num) tickets)]
            [sections
             (foldl (lambda (num sections) (find-sections sections num)) remaining-sections nums)])
@@ -66,7 +71,8 @@
   (reverse (iter sections '() (range 0 (length (first tickets))))))
 
 (define (find-valid-sections sections columns)
-  (for/fold ([possible-sections '()]) ([column columns])
+  (for/fold ([possible-sections '()])
+    ([column columns])
     (let (; [i (index-of columns column)]
           [_sections (foldl (lambda (num s) (find-sections s num)) sections column)])
       ; struct-copy is important here
@@ -75,16 +81,16 @@
 (define (reduce-sections possible-sections)
   (define (iter result remaining-possible-sections)
     (if (empty? (flatten remaining-possible-sections))
-        result
-        (let* ([first-single-i (index-where remaining-possible-sections
-                                            (lambda (s-list) (= (length s-list) 1)))]
-               [first-single (first (list-ref remaining-possible-sections first-single-i))]
-               [new-remaining
-                (map (lambda (s-list)
-                       (remf (lambda (sec) (eq? (section-name sec) (section-name first-single)))
-                             s-list))
-                     remaining-possible-sections)])
-          (iter (hash-set result first-single-i first-single) new-remaining)))
+      result
+      (let* ([first-single-i (index-where remaining-possible-sections
+                                          (lambda (s-list) (= (length s-list) 1)))]
+             [first-single (first (list-ref remaining-possible-sections first-single-i))]
+             [new-remaining
+              (map (lambda (s-list)
+                     (remf (lambda (sec) (eq? (section-name sec) (section-name first-single)))
+                           s-list))
+                   remaining-possible-sections)])
+        (iter (hash-set result first-single-i first-single) new-remaining)))
     (trace iter))
 
   (define result '())

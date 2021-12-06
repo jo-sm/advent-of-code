@@ -33,26 +33,35 @@
 
 (define (run current-black-tiles remaining-iters)
   (define all-tiles
-    (foldl (λ (tile memo) (set-union memo (adjacent-tiles tile)))
+    (foldl (λ (tile memo)
+             (set-union memo (adjacent-tiles tile)))
            (set)
            (set->list current-black-tiles)))
 
   (if (= remaining-iters 0)
-      current-black-tiles
-      (run
-       (for/fold ([next-black-tiles (set)]) ([tile all-tiles])
-         (let ([num-adjacent-black-tiles
-                (set-count (set-intersect (adjacent-tiles tile) current-black-tiles))])
-           (if (set-member? current-black-tiles tile)
-               (if (< 0 num-adjacent-black-tiles 3) (set-add next-black-tiles tile) next-black-tiles)
-               (if (= num-adjacent-black-tiles 2) (set-add next-black-tiles tile) next-black-tiles))))
-       (- remaining-iters 1))))
+    current-black-tiles
+    (run (for/fold ([next-black-tiles (set)])
+           ([tile all-tiles])
+           (let ([num-adjacent-black-tiles
+                  (set-count (set-intersect (adjacent-tiles tile) current-black-tiles))])
+             (if (set-member? current-black-tiles tile)
+               (if (< 0 num-adjacent-black-tiles 3)
+                 (set-add next-black-tiles tile)
+                 next-black-tiles)
+               (if (= num-adjacent-black-tiles 2)
+                 (set-add next-black-tiles tile)
+                 next-black-tiles))))
+         (- remaining-iters 1))))
 
 (define starting-black-tiles
-  (for/fold ([result (set)]) ([directions parts])
-    (let ([tile (for/fold ([x 0.0] [y 0.0] #:result (cons x y)) ([dir directions])
+  (for/fold ([result (set)])
+    ([directions parts])
+    (let ([tile (for/fold ([x 0.0] [y 0.0] #:result (cons x y))
+                  ([dir directions])
                   (let ([next (next-point dir x y)]) (values (car next) (cdr next))))])
 
-      (if (set-member? result tile) (set-remove result tile) (set-add result tile)))))
+      (if (set-member? result tile)
+        (set-remove result tile)
+        (set-add result tile)))))
 
 (set-count (run starting-black-tiles 100))

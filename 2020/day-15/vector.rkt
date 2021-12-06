@@ -4,11 +4,15 @@
 
 (define (play m current-number result n)
   (define next-current-number
-    (if (vector-ref result current-number) (- n 1 (vector-ref result current-number)) 0))
+    (if (vector-ref result current-number)
+      (- n 1 (vector-ref result current-number))
+      0))
 
   (vector-set! result current-number (- n 1))
 
-  (if (= m n) current-number (play m next-current-number result (+ n 1))))
+  (if (= m n)
+    current-number
+    (play m next-current-number result (+ n 1))))
 
 (define n 30000000)
 

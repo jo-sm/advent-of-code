@@ -14,12 +14,12 @@
   (define last-coord (last path))
 
   (if (= (second current-direction) 0)
-      path
-      (apply-direction-to-path
-       (append path (list (coord (+ (coord-x last-coord) x-incr) (+ (coord-y last-coord) y-incr))))
-       (list (first current-direction) (- (second current-direction) 1))
-       x-incr
-       y-incr)))
+    path
+    (apply-direction-to-path
+     (append path (list (coord (+ (coord-x last-coord) x-incr) (+ (coord-y last-coord) y-incr))))
+     (list (first current-direction) (- (second current-direction) 1))
+     x-incr
+     y-incr)))
 
 (define (calc-rectilinear-distance coord)
   (+ (abs (coord-x coord)) (abs (coord-y coord))))
@@ -50,7 +50,9 @@
 
   (cond
     [(null? (cdr directions)) (apply-direction-to-path path current-direction x-incr y-incr)]
-    [(and (= x-incr 0) (= y-incr 0)) (get-path (cdr directions) path new-heading)]
+    [(and (= x-incr 0)
+          (= y-incr 0))
+     (get-path (cdr directions) path new-heading)]
     [else (get-path (cdr directions)
                     (apply-direction-to-path path current-direction x-incr y-incr)
                     new-heading)]))

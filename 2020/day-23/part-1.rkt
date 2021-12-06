@@ -10,19 +10,28 @@
   (define new-arrangement (cons current-cup remaining))
 
   (if (= remaining-rounds 0)
-      (append (drop arrangement (- (length arrangement) (index-of arrangement 1)))
-              (take arrangement (- (length arrangement) (index-of arrangement 1))))
-      (let loop ([destination destination-cup])
-        (cond
-          [(< destination 1) (loop highest-cup)]
-          [(index-of picked-up destination) (loop (- destination 1))]
-          [else (let* ([i (index-of new-arrangement destination)]
-                       [next (append (take new-arrangement (+ i 1))
-                                     picked-up
-                                     (drop new-arrangement (+ i 1)))])
-                  (play (append (cdr next) (list (car next))) (- remaining-rounds 1)))]))))
+    (append (drop arrangement (- (length arrangement) (index-of arrangement 1)))
+            (take arrangement (- (length arrangement) (index-of arrangement 1))))
+    (let loop ([destination destination-cup])
+      (cond
+        [(< destination 1) (loop highest-cup)]
+        [(index-of picked-up destination) (loop (- destination 1))]
+        [else (let* ([i (index-of new-arrangement destination)]
+                     [next (append (take new-arrangement (+ i 1))
+                                   picked-up
+                                   (drop new-arrangement (+ i 1)))])
+                (play (append (cdr next) (list (car next))) (- remaining-rounds 1)))]))))
 
-(define example (map (λ (n-char) (string->number (string n-char))) (string->list "389125467")))
-(define input (map (λ (n-char) (string->number (string n-char))) (string->list "198753462")))
+(define example
+  (map (λ (n-char)
+         (string->number (string n-char)))
+       (string->list "389125467")))
+(define input
+  (map (λ (n-char)
+         (string->number (string n-char)))
+       (string->list "198753462")))
 
-(foldl (λ (n memo) (string-append memo (number->string n))) "" (play input 100))
+(foldl (λ (n memo)
+         (string-append memo (number->string n)))
+       ""
+       (play input 100))

@@ -11,12 +11,12 @@
 
   (define (passport-has-required-keys remaining-keys remaining-passport)
     (if (= (length remaining-passport) 0)
-        ; If there's no more passport remaining, check to see if we've removed all the required keys
-        (= (length remaining-keys) 0)
+      ; If there's no more passport remaining, check to see if we've removed all the required keys
+      (= (length remaining-keys) 0)
 
-        ; Maybe remove the current key from the required keys and continue
-        (passport-has-required-keys (remove (caar remaining-passport) remaining-keys)
-                                    (cdr remaining-passport))))
+      ; Maybe remove the current key from the required keys and continue
+      (passport-has-required-keys (remove (caar remaining-passport) remaining-keys)
+                                  (cdr remaining-passport))))
 
   (passport-has-required-keys required-keys passport))
 

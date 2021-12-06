@@ -22,10 +22,16 @@
 (define input (cons 0 (sort (read-input-lines #:line-parser string->number) <)))
 
 (apply *
-       (map (lambda (i) (if (= (length i) 1) 1 (tribonacci (length i))))
+       (map (lambda (i)
+              (if (= (length i) 1)
+                1
+                (tribonacci (length i))))
             (split-into-contiguous-regions example)))
 (apply *
-       (map (lambda (i) (if (= (length i) 1) 1 (tribonacci (length i))))
+       (map (lambda (i)
+              (if (= (length i) 1)
+                1
+                (tribonacci (length i))))
             (split-into-contiguous-regions input)))
 
 ; (check-eq?

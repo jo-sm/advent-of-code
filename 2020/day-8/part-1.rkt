@@ -6,7 +6,9 @@
 (struct instruction (operation argument))
 
 (define (list-ref-safe lst i)
-  (if (>= i (length lst)) null (list-ref lst i)))
+  (if (>= i (length lst))
+    null
+    (list-ref lst i)))
 
 (define (line->instructions line)
   (define-values (operation-name argument) (apply values (string-split line)))

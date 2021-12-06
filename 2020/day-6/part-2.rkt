@@ -11,10 +11,10 @@
   (define other-answers-chars (map string->list other-answers))
 
   (if (empty? other-answers)
-      ; If you're alone, all of your answers are in all of the "group's" answers
-      (string-length initial-answer)
-      (length (filter truthy?
-                      (map (cut all-lists-contain <> other-answers-chars) initial-answer-chars)))))
+    ; If you're alone, all of your answers are in all of the "group's" answers
+    (string-length initial-answer)
+    (length (filter truthy?
+                    (map (cut all-lists-contain <> other-answers-chars) initial-answer-chars)))))
 
 (define groups-answers
   (map string-split (read-input-file #:file-parser (cut string-split <> "\n\n"))))

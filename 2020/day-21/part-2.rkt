@@ -15,39 +15,48 @@
       (list (list->set ingredients) (list->set allergens)))))
 
 (define all-allergen-names
-  (foldl (λ (ingredient memo) (set-union memo (second ingredient))) (set) ingredients))
+  (foldl (λ (ingredient memo)
+           (set-union memo (second ingredient)))
+         (set)
+         ingredients))
 
 (define all-allergens
   (for/list ([allergen (in-set all-allergen-names)])
     (cons allergen
-          (foldl
-           (λ (ingredient memo)
-             (if (set-member? (second ingredient) allergen)
-                 (if (set-empty? memo) (first ingredient) (set-intersect memo (first ingredient)))
-                 memo))
-           (set)
-           ingredients))))
+          (foldl (λ (ingredient memo)
+                   (if (set-member? (second ingredient) allergen)
+                     (if (set-empty? memo)
+                       (first ingredient)
+                       (set-intersect memo (first ingredient)))
+                     memo))
+                 (set)
+                 ingredients))))
 
 (define (reduce-allergens all-allergens)
   (define (iter remaining-allergens result)
     (if (empty? remaining-allergens)
-        result
-        (let*-values
-            ([(singles others) (partition (λ (a) (= (set-count (cdr a)) 1)) remaining-allergens)]
-             [(removed)
-              (map (λ (other)
-                     (foldl (λ (single memo)
-                              (cons (car memo) (set-remove (cdr memo) (set-first (cdr single)))))
-                            other
-                            singles))
-                   others)])
-          (iter removed (append result singles)))))
+      result
+      (let*-values ([(singles others) (partition (λ (a)
+                                                   (= (set-count (cdr a)) 1))
+                                                 remaining-allergens)]
+                    [(removed) (map (λ (other)
+                                      (foldl (λ (single memo)
+                                               (cons (car memo)
+                                                     (set-remove (cdr memo)
+                                                                 (set-first (cdr single)))))
+                                             other
+                                             singles))
+                                    others)])
+        (iter removed (append result singles)))))
 
   (iter all-allergens '()))
 
 (define alphabetical-allergens
-  (foldl (λ (a memo) (append memo (list (set-first (cdr a)))))
+  (foldl (λ (a memo)
+           (append memo (list (set-first (cdr a)))))
          '()
-         (sort (reduce-allergens all-allergens) (λ (a b) (string<? (car a) (car b))))))
+         (sort (reduce-allergens all-allergens)
+               (λ (a b)
+                 (string<? (car a) (car b))))))
 
 (check-equal? (string-join alphabetical-allergens ",") "rhvbn,mmcpg,kjf,fvk,lbmt,jgtb,hcbdb,zrb")

@@ -10,8 +10,8 @@
 (define (create-image-layers-from-data data)
   (define (iter result rest)
     (if (equal? rest "")
-        result
-        (iter (cons (substring rest 0 (* HEIGHT WIDTH)) result) (substring rest (* HEIGHT WIDTH)))))
+      result
+      (iter (cons (substring rest 0 (* HEIGHT WIDTH)) result) (substring rest (* HEIGHT WIDTH)))))
 
   (iter null data))
 
@@ -29,6 +29,11 @@
 (define each-num-zeros
   (map (lambda (i) (cons (count-num-digits i 0) i)) (create-image-layers-from-data data)))
 (define layer-with-most
-  (cdr (foldr (lambda (i memo) (if (<= (car i) (car memo)) i memo)) (cons +inf.0 "") each-num-zeros)))
+  (cdr (foldr (lambda (i memo)
+                (if (<= (car i) (car memo))
+                  i
+                  memo))
+              (cons +inf.0 "")
+              each-num-zeros)))
 
 (* (count-num-digits layer-with-most 1) (count-num-digits layer-with-most 2))

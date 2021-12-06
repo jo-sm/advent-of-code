@@ -41,11 +41,13 @@
   (define (bm-fold bm result)
     (cond
       ; Subtract 2^(bitmask location) from the result if the bit is set and it shouldn't be
-      [(and (bitwise-bit-set? result (bitmask-loc bm)) (= (bitmask-num bm) 0))
+      [(and (bitwise-bit-set? result (bitmask-loc bm))
+            (= (bitmask-num bm) 0))
        (- result (expt 2 (bitmask-loc bm)))]
 
       ; Add 2^(bitmask location) to the result if the bit is not set and it should be
-      [(and (not (bitwise-bit-set? result (bitmask-loc bm))) (= (bitmask-num bm) 1))
+      [(and (not (bitwise-bit-set? result (bitmask-loc bm)))
+            (= (bitmask-num bm) 1))
        (+ result (expt 2 (bitmask-loc bm)))]
 
       [else result]))

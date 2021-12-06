@@ -25,9 +25,14 @@
 (define (generate-signals)
   (define (determine-signal-for-combo i ps combo prev-output)
     (define next-prev-output
-      (if (null? combo) (normal-run i ps prev-output) (first-run i ps (car combo) prev-output)))
+      (if (null? combo)
+        (normal-run i ps prev-output)
+        (first-run i ps (car combo) prev-output)))
 
-    (define next-combo (if (null? combo) null (cdr combo)))
+    (define next-combo
+      (if (null? combo)
+        null
+        (cdr combo)))
     (define next-i (modulo (+ i 1) 5))
 
     (cond
@@ -39,10 +44,15 @@
 
   (define (iter result combos)
     (if (null? combos)
-        result
-        (iter (cons (determine-signal-for-combo 0 (generate-initial-programs) (car combos) 0) result)
-              (cdr combos))))
+      result
+      (iter (cons (determine-signal-for-combo 0 (generate-initial-programs) (car combos) 0) result)
+            (cdr combos))))
 
   (iter null (permutations (list 5 6 7 8 9))))
 
-(foldr (lambda (i memo) (if (> i memo) i memo)) 0 (generate-signals))
+(foldr (lambda (i memo)
+         (if (> i memo)
+           i
+           memo))
+       0
+       (generate-signals))

@@ -34,15 +34,16 @@
   (list sections my-ticket other-tickets))
 
 (define (validate-ticket sections ticket)
-  (for/fold ([invalid null] [remaining-sections sections] #:result invalid) ([ticket-num ticket])
+  (for/fold ([invalid null] [remaining-sections sections] #:result invalid)
+    ([ticket-num ticket])
     (let ([found-section (findf (lambda (section)
                                   (or (<= (section-min1 section) ticket-num (section-max1 section))
                                       (<= (section-min2 section) ticket-num (section-max2 section))))
-                                remaining-sections)])
+                           remaining-sections)])
 
       (if found-section
-          (values invalid remaining-sections)
-          (values (cons ticket-num invalid) remaining-sections)))))
+        (values invalid remaining-sections)
+        (values (cons ticket-num invalid) remaining-sections)))))
 
 (define example-raw (file->string "example"))
 (define example (parse-file example-raw))

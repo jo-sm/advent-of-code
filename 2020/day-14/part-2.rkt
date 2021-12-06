@@ -43,8 +43,8 @@
 
   (define (apply-x-mask address pos)
     (if (bitwise-bit-set? address pos)
-        (list address (- address (expt 2 pos)))
-        (list address (+ address (expt 2 pos)))))
+      (list address (- address (expt 2 pos)))
+      (list address (+ address (expt 2 pos)))))
 
   (define (iter remaining-mask addresses)
     (cond
@@ -56,9 +56,11 @@
 
   (define (bm-fold bm result)
     (cond
-      [(and (bitwise-bit-set? result (bitmask-loc bm)) (= (bitmask-num bm) 2))
+      [(and (bitwise-bit-set? result (bitmask-loc bm))
+            (= (bitmask-num bm) 2))
        (- result (expt 2 (bitmask-loc bm)))]
-      [(and (not (bitwise-bit-set? result (bitmask-loc bm))) (= (bitmask-num bm) 1))
+      [(and (not (bitwise-bit-set? result (bitmask-loc bm)))
+            (= (bitmask-num bm) 1))
        (+ result (expt 2 (bitmask-loc bm)))]
       [else result]))
 

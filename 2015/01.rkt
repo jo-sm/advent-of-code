@@ -4,7 +4,9 @@
          rackunit)
 
 (define (part-1 input)
-  (for/fold ([floor 0]) ([char input] #:when (or (eq? #\( char) (eq? #\) char)))
+  (for/fold ([floor 0])
+    ([char input] #:when (or (eq? #\( char)
+                             (eq? #\) char)))
     (cond
       [(eq? #\( char) (+ floor 1)]
       [(eq? #\) char) (- floor 1)])))
@@ -13,7 +15,9 @@
   ; We need to get the position _as_ Santa enters the basement, not when he is already in the basement, so we subtract 1
   ; since it happened in the last iteration
   (for/fold ([floor 0] [pos 1] #:result (- pos 1))
-            ([char input] #:when (or (eq? #\( char) (eq? #\) char)) #:break (= -1 floor))
+    ([char input] #:when (or (eq? #\( char)
+                             (eq? #\) char))
+                  #:break (= -1 floor))
     (cond
       [(eq? #\( char) (values (+ floor 1) (+ pos 1))]
       [(eq? #\) char) (values (- floor 1) (+ pos 1))])))

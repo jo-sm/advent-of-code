@@ -12,10 +12,18 @@
         ))
 
 (define (get-highest pairs-set proc)
-  (foldr (lambda (i memo) (if (> (proc i) (proc memo)) i memo)) (cons 0 0) (set->list pairs-set)))
+  (foldr (lambda (i memo)
+           (if (> (proc i) (proc memo))
+             i
+             memo))
+         (cons 0 0)
+         (set->list pairs-set)))
 
 (define (get-lowest pairs-set proc)
-  (foldr (lambda (i memo) (if (< (proc i) (proc memo)) i memo))
+  (foldr (lambda (i memo)
+           (if (< (proc i) (proc memo))
+             i
+             memo))
          (cons +inf.0 +inf.0)
          (set->list pairs-set)))
 
@@ -23,7 +31,10 @@
   (cons (+ (car a) (car b)) (+ (cdr a) (cdr b))))
 
 (define (new-coords cur-coords cur-dir update)
-  (define delta (if (= update 0) -1 1))
+  (define delta
+    (if (= update 0)
+      -1
+      1))
 
   (define new-dir (modulo (+ cur-dir delta) 4))
 
@@ -33,13 +44,17 @@
   (define (iter result cur-coords cur-dir white-panels)
     (define input
       ; If current coords are white, give 1, else 0
-      (if (set-member? white-panels cur-coords) 1 0))
+      (if (set-member? white-panels cur-coords)
+        1
+        0))
 
     (define prog-run (runner input))
     (define out (drop (first prog-run) (- (length (first prog-run)) 2)))
     (define next-coords-dir (new-coords cur-coords cur-dir (second out)))
     (define new-white-panels
-      (if (= (first out) 1) (set-add white-panels cur-coords) (set-remove white-panels cur-coords)))
+      (if (= (first out) 1)
+        (set-add white-panels cur-coords)
+        (set-remove white-panels cur-coords)))
 
     (cond
       [(finished? runner) white-panels]
@@ -67,7 +82,9 @@
 (define lines
   (map (lambda (y)
          (map (lambda (x)
-                (if (set-member? white-panels (cons x y)) (get-color "white") (get-color "black")))
+                (if (set-member? white-panels (cons x y))
+                  (get-color "white")
+                  (get-color "black")))
               x-pixels))
        y-pixels))
 

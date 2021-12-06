@@ -10,7 +10,9 @@
   (list (string->list (substring line 0 7)) (string->list (substring line 7))))
 
 (define (partition operation lst)
-  (if (index-of '(#\F #\L) operation) (take lst (/ (length lst) 2)) (drop lst (/ (length lst) 2))))
+  (if (index-of '(#\F #\L) operation)
+    (take lst (/ (length lst) 2))
+    (drop lst (/ (length lst) 2))))
 
 (define (generate-seat-from-operations partition-operations)
   (seat (first (foldl partition (range 0 128) (first partition-operations)))

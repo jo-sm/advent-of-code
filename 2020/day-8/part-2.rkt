@@ -7,7 +7,9 @@
 (struct instruction (operation argument))
 
 (define (list-ref-safe lst i)
-  (if (>= i (length lst)) null (list-ref lst i)))
+  (if (>= i (length lst))
+    null
+    (list-ref lst i)))
 
 (define (line->instructions line)
   (define-values (operation-name argument) (apply values (string-split line)))
@@ -42,15 +44,17 @@
   (define specified-instruction (list-ref instructions pos))
 
   (if (equal? (instruction-operation specified-instruction) "jmp")
-      (list-set instructions pos (instruction "nop" (instruction-argument specified-instruction)))
-      (list-set instructions pos (instruction "jmp" (instruction-argument specified-instruction)))))
+    (list-set instructions pos (instruction "nop" (instruction-argument specified-instruction)))
+    (list-set instructions pos (instruction "jmp" (instruction-argument specified-instruction)))))
 
 (define (run instructions)
   (define (iter jmp-nop-instruction-positions)
     (define instruction-set (swap-jmp-nop instructions (car jmp-nop-instruction-positions)))
     (define program-run (run-instruction-set instruction-set '() 0 0))
 
-    (if (null? program-run) (iter (cdr jmp-nop-instruction-positions)) program-run))
+    (if (null? program-run)
+      (iter (cdr jmp-nop-instruction-positions))
+      program-run))
 
   (define jmp-nop-instruction-positions
     (indexes-where instructions

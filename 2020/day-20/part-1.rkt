@@ -52,13 +52,17 @@
   (define side-length (sqrt (length image)))
 
   ; x+1
-  (list (and (< side-length (+ x 1)) (list-ref (list-ref image y) (+ x 1)))
+  (list (and (< side-length (+ x 1))
+             (list-ref (list-ref image y) (+ x 1)))
         ; ; y+1
-        (and (< side-length (+ y 1)) (list-ref (list-ref image (+ y 1)) x))
+        (and (< side-length (+ y 1))
+             (list-ref (list-ref image (+ y 1)) x))
         ; x-1
-        (and (>= (- x 1) 0) (list-ref (list-ref image y) (- x 1)))
+        (and (>= (- x 1) 0)
+             (list-ref (list-ref image y) (- x 1)))
         ; ; y-1
-        (and (>= (- y 1) 0) (list-ref (list-ref image (- y 1)) x))))
+        (and (>= (- y 1) 0)
+             (list-ref (list-ref image (- y 1)) x))))
 
 (define tiles
   (let* ([raw-tiles (map (cut string-split <> "\n") (string-split (file->string "input") "\n\n"))]
@@ -68,12 +72,18 @@
     (for/list ([strs tiles-strs] [id tile-ids])
       (image-tile id
                   (for/list ([str strs])
-                    (map (lambda (c) (if (char=? c #\#) 1 0)) (string->list str)))))))
+                    (map (lambda (c)
+                           (if (char=? c #\#)
+                             1
+                             0))
+                         (string->list str)))))))
 
 (define (match-edge tiles current-tile tiles-edge-fn current-tile-edge-fn)
   (define current-tile-edge (current-tile-edge-fn current-tile))
 
-  (findf (λ (tile) (equal? (tiles-edge-fn tile) current-tile-edge)) tiles))
+  (findf (λ (tile)
+           (equal? (tiles-edge-fn tile) current-tile-edge))
+    tiles))
 
 (define (get-normal-edges tile)
   (list (get-top-edge tile) (get-right-edge tile) (get-bottom-edge tile) (get-left-edge tile)))
@@ -94,4 +104,7 @@
                [else tile]))))
 
 (apply *
-       (map image-tile-id (filter (λ (tile) (= (length (find-adjacent-tiles tiles tile)) 2)) tiles)))
+       (map image-tile-id
+            (filter (λ (tile)
+                      (= (length (find-adjacent-tiles tiles tile)) 2))
+                    tiles)))

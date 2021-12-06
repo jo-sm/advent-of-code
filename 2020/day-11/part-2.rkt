@@ -10,11 +10,27 @@
 
 (define (find-next-seat seats row col cur-row cur-col)
   (define possible-next-seat (list-ref-safe (list-ref-safe seats cur-row) cur-col))
-  (define possible-next-cur-row (if (= row cur-row) row ((if (> cur-row row) + -) cur-row 1)))
-  (define possible-next-cur-col (if (= col cur-col) col ((if (> cur-col col) + -) cur-col 1)))
+  (define possible-next-cur-row
+    (if (= row cur-row)
+      row
+      ((if (> cur-row row)
+         +
+         -)
+       cur-row
+       1)))
+  (define possible-next-cur-col
+    (if (= col cur-col)
+      col
+      ((if (> cur-col col)
+         +
+         -)
+       cur-col
+       1)))
 
   (cond
-    [(and (= row cur-row) (= col cur-col)) null]
+    [(and (= row cur-row)
+          (= col cur-col))
+     null]
     [(null? possible-next-seat) null]
     [(not (equal? possible-next-seat #\.)) possible-next-seat]
     [else (find-next-seat seats row col possible-next-cur-row possible-next-cur-col)]))
@@ -33,8 +49,13 @@
 
   (cond
     [(equal? seat #\.) #\.]
-    [(and (equal? seat #\L) (not (findf (lambda (s) (equal? s #\#)) adjacent-seats))) #\#]
-    [(and (equal? seat #\#) (>= (length (filter (lambda (s) (equal? s #\#)) adjacent-seats)) 5)) #\L]
+    [(and (equal? seat #\L)
+          (not (findf (lambda (s) (equal? s #\#))
+                 adjacent-seats)))
+     #\#]
+    [(and (equal? seat #\#)
+          (>= (length (filter (lambda (s) (equal? s #\#)) adjacent-seats)) 5))
+     #\L]
     [else seat]))
 
 (define (find-equilibrium seats [n 0])
@@ -44,8 +65,8 @@
             (range 0 (length (first seats)))))
 
   (if (not (equal? seats new-seats-arrangement))
-      (find-equilibrium new-seats-arrangement (+ n 1))
-      (values new-seats-arrangement n)))
+    (find-equilibrium new-seats-arrangement (+ n 1))
+    (values new-seats-arrangement n)))
 
 (define example (read-input-lines "example" #:line-parser string->list))
 (define input (read-input-lines #:line-parser string->list))

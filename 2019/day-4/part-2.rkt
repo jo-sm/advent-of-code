@@ -4,8 +4,8 @@
   (define (iter digits remaining-number)
     (let-values ([(next-remaining-number digit) (quotient/remainder remaining-number 10)])
       (if (= next-remaining-number 0)
-          (cons digit digits)
-          (iter (cons digit digits) next-remaining-number))))
+        (cons digit digits)
+        (iter (cons digit digits) next-remaining-number))))
 
   (iter '() number))
 
@@ -57,7 +57,8 @@
   ; then the character to a digit
   (define digits (number->digits password))
 
-  (and (always-increasing digits) (has-group-of-two digits)))
+  (and (always-increasing digits)
+       (has-group-of-two digits)))
 
 (define possible-passwords (range 128392 643281))
 

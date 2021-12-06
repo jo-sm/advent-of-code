@@ -24,7 +24,9 @@
 (define (get-modes program pos)
   (define digits (number->digits (list-ref program pos)))
 
-  (if (> (length digits) 2) (take digits (- (length digits) 2)) null))
+  (if (> (length digits) 2)
+    (take digits (- (length digits) 2))
+    null))
 
 (define (translate-arg-pos-to-args program pos args-pos)
   (define parameters (get-modes program pos))

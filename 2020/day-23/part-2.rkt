@@ -14,19 +14,22 @@
     (vector-ref next-elements (vector-ref next-elements (vector-ref next-elements current-cup))))
 
   (if (= remaining-rounds 0)
-      next-elements
-      (let loop ([destination destination-cup])
-        (cond
-          [(< destination 1) (loop (- size 1))]
-          [(or (= destination p1) (= destination p2) (= destination p3)) (loop (- destination 1))]
-          [else (let ([a (vector-ref next-elements destination)]
-                      [b (vector-ref next-elements current-cup)]
-                      [c (vector-ref next-elements p3)])
-                  (vector-set! next-elements p3 a)
-                  (vector-set! next-elements destination b)
-                  (vector-set! next-elements current-cup c)
+    next-elements
+    (let loop ([destination destination-cup])
+      (cond
+        [(< destination 1) (loop (- size 1))]
+        [(or (= destination p1)
+             (= destination p2)
+             (= destination p3))
+         (loop (- destination 1))]
+        [else (let ([a (vector-ref next-elements destination)]
+                    [b (vector-ref next-elements current-cup)]
+                    [c (vector-ref next-elements p3)])
+                (vector-set! next-elements p3 a)
+                (vector-set! next-elements destination b)
+                (vector-set! next-elements current-cup c)
 
-                  (play next-elements (- remaining-rounds 1) c))]))))
+                (play next-elements (- remaining-rounds 1) c))]))))
 
 (define (make-arrangement start size)
   (define arrangement (make-vector size #f))
@@ -38,7 +41,9 @@
     (vector-set! next-elements i (+ i 2)))
 
   (define initial-arrangement
-    (map (λ (n-char) (string->number (string n-char))) (string->list start)))
+    (map (λ (n-char)
+           (string->number (string n-char)))
+         (string->list start)))
 
   (for ([(num i) (in-indexed initial-arrangement)])
     (vector-set! arrangement i num))

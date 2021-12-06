@@ -3,13 +3,17 @@
 (require "../utils.rkt")
 
 (define orbits (read "input" (lambda (line) (string-split line ")"))))
-(define COM (findf (lambda (i) (equal? (first i) "COM")) orbits))
+(define COM
+  (findf (lambda (i) (equal? (first i) "COM"))
+    orbits))
 
 (define (generate-path end start lst)
   (define (iter result)
     (if (equal? (first result) end)
-        result
-        (iter (cons (findf (lambda (i) (equal? (first (first result)) (second i))) lst) result))))
+      result
+      (iter (cons (findf (lambda (i) (equal? (first (first result)) (second i)))
+                    lst)
+                  result))))
 
   (iter (list start)))
 

@@ -20,7 +20,8 @@
 
   (define first-possible-bus-number (car (sort later-bus-numbers <)))
   (define original-bus-number
-    (findf (lambda (n) (= (remainder first-possible-bus-number n) 0)) bus-numbers))
+    (findf (lambda (n) (= (remainder first-possible-bus-number n) 0))
+      bus-numbers))
 
   (list original-bus-number (- first-possible-bus-number earliest-departure)))
 

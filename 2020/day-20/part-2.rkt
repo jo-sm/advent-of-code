@@ -71,13 +71,17 @@
   (define side-length (sqrt (length image)))
 
   ; x+1
-  (list (and (< side-length (+ x 1)) (list-ref (list-ref image y) (+ x 1)))
+  (list (and (< side-length (+ x 1))
+             (list-ref (list-ref image y) (+ x 1)))
         ; ; y+1
-        (and (< side-length (+ y 1)) (list-ref (list-ref image (+ y 1)) x))
+        (and (< side-length (+ y 1))
+             (list-ref (list-ref image (+ y 1)) x))
         ; x-1
-        (and (>= (- x 1) 0) (list-ref (list-ref image y) (- x 1)))
+        (and (>= (- x 1) 0)
+             (list-ref (list-ref image y) (- x 1)))
         ; ; y-1
-        (and (>= (- y 1) 0) (list-ref (list-ref image (- y 1)) x))))
+        (and (>= (- y 1) 0)
+             (list-ref (list-ref image (- y 1)) x))))
 
 (define tiles
   (let* ([raw-tiles (map (cut string-split <> "\n") (string-split (file->string "input") "\n\n"))]
@@ -92,7 +96,9 @@
 (define (match-edge tiles current-tile tiles-edge-fn current-tile-edge-fn)
   (define current-tile-edge (current-tile-edge-fn current-tile))
 
-  (findf (λ (tile) (equal? (tiles-edge-fn tile) current-tile-edge)) tiles))
+  (findf (λ (tile)
+           (equal? (tiles-edge-fn tile) current-tile-edge))
+    tiles))
 
 (define (get-normal-edges tile)
   (list (get-top-edge tile) (get-right-edge tile) (get-bottom-edge tile) (get-left-edge tile)))
@@ -123,7 +129,9 @@
       [("right") (equal? (get-right-edge aligned) (get-left-edge arrangement))]
       [("below") (equal? (get-bottom-edge aligned) (get-top-edge arrangement))]))
 
-  (define result (findf find-alignment arrangements))
+  (define result
+    (findf find-alignment
+      arrangements))
 
   ; (get-bottom-edge aligned) (get-top-edge arrangement)
 
@@ -137,17 +145,28 @@
   result)
 ; (trace align-tile)
 
-(define graph (map (λ (tile) (list tile (find-adjacent-tiles tiles tile))) tiles))
-(define start (findf (λ (node) (= (length (second node)) 2)) graph))
+(define graph
+  (map (λ (tile)
+         (list tile (find-adjacent-tiles tiles tile)))
+       tiles))
+(define start
+  (findf (λ (node)
+           (= (length (second node)) 2))
+    graph))
 
 ; Align this node so that the direction of the image will be right and down (easier to build list)
 (define (align-start tile neighbors [iter-count 0])
   ; (displayln (image-tile-arrangement tile))
-  (define neighbor-position (if (= (length neighbors) 2) "right" "below"))
+  (define neighbor-position
+    (if (= (length neighbors) 2)
+      "right"
+      "below"))
 
   (let ([found (align-tile tile (car neighbors) neighbor-position)])
     (cond
-      [(and found (empty? (cdr neighbors))) tile]
+      [(and found
+            (empty? (cdr neighbors)))
+       tile]
       [found (align-start tile (cdr neighbors) 0)]
       [(> iter-count 6) (error "too many tries")]
 
@@ -178,10 +197,14 @@
   (list-ref (list-ref image y) x))
 
 (define (remove-node-from-graph graph tile)
-  (filter-not (λ (node) (= (image-tile-id (first node)) (image-tile-id tile))) graph))
+  (filter-not (λ (node)
+                (= (image-tile-id (first node)) (image-tile-id tile)))
+              graph))
 
 (define (get-node-from-graph graph tile)
-  (findf (λ (node) (= (image-tile-id (first node)) (image-tile-id tile))) graph))
+  (findf (λ (node)
+           (= (image-tile-id (first node)) (image-tile-id tile)))
+    graph))
 
 (define (add-tile-to-image image tile x y)
   (list-set image y (list-set (list-ref image y) x tile)))
@@ -190,8 +213,11 @@
   ; (displayln (list "find-tile-in-image" tile))
   (define result
     (findf (λ (line)
-             (findf (λ (point) (and point (= (image-tile-id point) (image-tile-id tile)))) line))
-           image))
+             (findf (λ (point)
+                      (and point
+                           (= (image-tile-id point) (image-tile-id tile))))
+               line))
+      image))
 
   ; (displayln (list "-> find-tile-in-image: " (image-tile-id tile) (or (and result "FOUND") "not found")))
 
@@ -209,7 +235,10 @@
         [(= x 0) (get-tile-from-image image 0 (- y 1))]
         [else (get-tile-from-image image (- x 1) y)]))
 
-    (define unaligned-position (if (= x 0) "below" "right"))
+    (define unaligned-position
+      (if (= x 0)
+        "below"
+        "right"))
 
     (define aligned-node (get-node-from-graph graph aligned-tile))
     (define neighbors (second aligned-node))
@@ -224,15 +253,18 @@
 
     ; (displayln aligned-neighbor)
     (define aligned-new
-      (findf (λ (neighbor) (and neighbor (not (find-tile-in-image image neighbor))))
-             aligned-neighbor))
+      (findf (λ (neighbor)
+               (and neighbor
+                    (not (find-tile-in-image image neighbor))))
+        aligned-neighbor))
 
     ; (displayln aligned-new)
 
     ; (add-tile-to-image image aligned-new x y)
 
     (cond
-      [(and (= (+ y 1) (length image)) (= (+ x 1) (length image)))
+      [(and (= (+ y 1) (length image))
+            (= (+ x 1) (length image)))
        (add-tile-to-image image aligned-new x y)]
       ; [(and (= y 1) (= (+ x 1) (length image))) (add-tile-to-image image aligned-new x y)]
       [(= (+ x 1) (length image)) (iter (add-tile-to-image image aligned-new x y) graph 0 (+ y 1))]
@@ -254,7 +286,9 @@
 
 (define (find-char-at-positions line positions char shift)
   (= (length (filter (cut eq? #f <>)
-                     (map (λ (pos) (char=? (list-ref line (+ pos shift)) char)) positions)))
+                     (map (λ (pos)
+                            (char=? (list-ref line (+ pos shift)) char))
+                          positions)))
      0))
 ; (trace find-char-at-positions)
 
@@ -274,22 +308,33 @@
 ; (trace find-num-dragons)
 
 (define strs
-  (for/fold ([result '()]) ([f trimmed])
+  (for/fold ([result '()])
+    ([f trimmed])
     (append result
-            (map (λ (p) (foldl (λ (r memo) (append memo r)) '() p))
-                 (reverse
-                  (for/fold ([result '()]) ([i (range 0 (length (image-tile-arrangement (car f))))])
-                    (cons (map (λ (tile) (list-ref (image-tile-arrangement tile) i)) f) result)))))))
+            (map (λ (p)
+                   (foldl (λ (r memo)
+                            (append memo r))
+                          '()
+                          p))
+                 (reverse (for/fold ([result '()])
+                            ([i (range 0 (length (image-tile-arrangement (car f))))])
+                            (cons (map (λ (tile)
+                                         (list-ref (image-tile-arrangement tile) i))
+                                       f)
+                                  result)))))))
 
 ; strs
 
 ; (find-num-dragons strs)
 
 (define found-arrangement
-  (foldl
-   (λ (arng memo)
-     (if memo memo (let ([num (find-num-dragons arng)]) (and (> num 0) (list num (flatten arng))))))
-   #f
-   (get-possible-arrangements-str strs)))
+  (foldl (λ (arng memo)
+           (if memo
+             memo
+             (let ([num (find-num-dragons arng)])
+               (and (> num 0)
+                    (list num (flatten arng))))))
+         #f
+         (get-possible-arrangements-str strs)))
 
 (- (count (cut eq? <> #\#) (second found-arrangement)) (* (first found-arrangement) 15))
