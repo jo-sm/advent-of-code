@@ -7,7 +7,7 @@
          rackunit)
 
 #|
-Very simple day today (compared to yesterday). Not much to be said, except that using `in-range` is significantly faster than `range`
+Very simple day today (compared to the last few). Not much to be said, except that using `in-range` is significantly faster than `range`
 with large numbers. That is, the following:
 
 ```
@@ -23,12 +23,15 @@ is significantly slower than this:
     ([i (in-range 1 (+ n 1))])
     (+ result i))
 ```
+
+But, in this case, it's a lot better to just use `n * n + 1 / 2`. It's much faster than either.
+
+Another thing that could likely improve things is to avoid using 3 maps. It's not like Clojure where they don't make an intermediate
+list, so it's probably a bit slower due to that.
 |#
 
 (define (triangular n)
-  (for/fold ([result 0])
-    ([i (in-range 1 (+ n 1))])
-    (+ result i)))
+  (/ (* n (+ n 1)) 2))
 
 (define (calculate-simple-move-costs nums)
   (define floor (apply min nums))
