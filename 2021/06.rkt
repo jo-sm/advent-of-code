@@ -13,6 +13,17 @@ and not `nested-length` for a while, which worked but was unnecessarily slow (ca
 
 I don't know if it would be possible to avoid the use of `nested-length` and keep a count internal to `simulate` due to the way memoization
 works, but it's worth exploring.
+
+Update: there is a closed form of the function, which is:
+
+Given f(m, n):
+1 if m <= n
+2 if m < 9
+f(n-9) + f(n-7) otherwise
+
+I saw something about it while looking at other solutions on Reddit, but the post didn't go into much detail and I can't find it now to see if
+it's been updated. It didn't clearly state the closed form, but said that f(8) = f(0) + f(2) which made me think a bit more about the general
+case, coming up with the above. I plan to look into how I could have come up with this by analysis.
 |#
 
 ; TODO: turn into syntax, like `define/memo` (I know there is the `memoize` package but I want to do it myself :-))
@@ -27,31 +38,24 @@ works, but it's worth exploring.
         result)))
   call)
 
-(define nested-length
-  (memoize (λ (lst n)
-             (cond
-               [(empty? lst) n]
-               [(list? (car lst)) (nested-length (cdr lst) (+ (nested-length (car lst) 0) n))]
-               [else (nested-length (cdr lst) (add1 n))]))))
-
 (define simulate
-  (memoize (λ (curr n)
+  (memoize (λ (m n)
              (cond
-               [(= n 0) curr]
-               [(= curr 0) (list (simulate 6 (sub1 n)) (simulate 8 (sub1 n)))]
-               [else (simulate (sub1 curr) (sub1 n))]))))
+               [(<= m n) 1]
+               [(< m 9) 2]
+               [else (+ (simulate (- m 9) n) (simulate (- m 7) n))]))))
 
 (define (part-1 input)
   (~>> input
        (map (λ (n)
-              (simulate n 80)))
-       (nested-length _ 0)))
+              (simulate 80 n)))
+       (apply +)))
 
 (define (part-2 input)
   (~>> input
        (map (λ (n)
-              (simulate n 256)))
-       (nested-length _ 0)))
+              (simulate 256 n)))
+       (apply +)))
 
 (define (parser raw)
   (~> raw
