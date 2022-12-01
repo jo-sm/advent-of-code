@@ -5,6 +5,7 @@
          racket/port
          racket/string
          racket/list
+         racket/bool
          srfi/26)
 
 (provide (all-defined-out))
@@ -36,3 +37,15 @@
       [(null? remaining) (reverse result)]
       [(> n (length remaining)) (loop '() (cons remaining result))]
       [else (loop (drop remaining n) (cons (take remaining n) result))])))
+
+(define/contract (true? v)
+  (-> any/c boolean?)
+  (not (false? v)))
+
+(define/contract (char->number char)
+  (-> char? number?)
+  (- (char->integer char) 48))
+
+(define/contract (matrix-ref matrix x y)
+  (-> (listof (listof number?)) number? number? any/c)
+  (list-ref (list-ref matrix y) x))

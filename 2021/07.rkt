@@ -24,7 +24,7 @@ is significantly slower than this:
     (+ result i))
 ```
 
-But, in this case, it's a lot better to just use `n * n + 1 / 2`. It's much faster than either.
+But, in this case, it's a lot better to just use `(n * n + 1) / 2`. It's much faster than either.
 
 Another thing that could likely improve things is to avoid using 3 maps. It's not like Clojure where they don't make an intermediate
 list, so it's probably a bit slower due to that.
