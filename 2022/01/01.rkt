@@ -4,26 +4,13 @@
          racket/list
          racket/string
          rackunit
-         threading)
+         qi)
 
-(define (part-1 groups)
-  (~>> groups
-       (map (lambda (group) (apply + group)))
-       (sort _ >)
-       car))
+(define-flow part-1 (~> sep (>< (~> sep +)) collect (sort >) car))
+(define-flow part-2 (~> sep (>< (~> sep +)) collect (sort >) (take 3) sep +))
 
-(define (part-2 groups)
-  (~>> groups
-       (map (lambda (group) (apply + group)))
-       (sort _ >)
-       (take _ 3)
-       (apply +)))
-
-(define (parser raw)
-  (~>> raw
-       (string-split _ "\n\n")
-       (map (lambda (group) (string-split group "\n")))
-       (mapmap string->number)))
+(define-flow string-list->numbers-list (~> (string-split "\n") sep (>< string->number) collect))
+(define-flow parser (~> (string-split "\n\n") sep (>< string-list->numbers-list) collect))
 
 (define example (parser "1000
 2000
